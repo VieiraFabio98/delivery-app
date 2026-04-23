@@ -1,0 +1,7 @@
+
+
+class CreateCategoriaUseCase {
+
+}
+
+export { CreateCategoriaUseCase }

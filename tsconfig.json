@@ -9,10 +9,9 @@
     "types": ["node", "express"],
     "typeRoots" : ["./src/types", "./node_modules/@types"],
     "paths": {
+      "@app/*": ["app/*"],
+      "@database/*": ["database/*"],
       "@modules/*": ["modules/*"],
-      "@shared/*": ["shared/*"],
-      "@errors/*": ["errors/*"],
-      "@utils/*": ["utils/*"],
       "@services/*": ["services/*"],
     },
     "strict": true,

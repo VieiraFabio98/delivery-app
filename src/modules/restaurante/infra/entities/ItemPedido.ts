@@ -5,7 +5,7 @@ import { Produto } from './Produto'
 @Entity()
 export class ItemPedido {
   @PrimaryGeneratedColumn('uuid')
-  id: number
+  id: string
 
   @ManyToOne(() => Pedido, pedido => pedido.itens)
   pedido: Pedido

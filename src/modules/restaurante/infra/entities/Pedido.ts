@@ -7,7 +7,7 @@ export type PedidoStatus = 'aguardando_pagamento' | 'pago' | 'em_preparo' | 'pro
 @Entity()
 export class Pedido {
   @PrimaryGeneratedColumn('uuid')
-  id: number
+  id: string
 
   @ManyToOne(() => Cliente, cliente => cliente.pedidos)
   cliente: Cliente

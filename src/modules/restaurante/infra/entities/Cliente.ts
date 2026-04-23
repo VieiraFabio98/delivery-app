@@ -4,7 +4,7 @@ import { Pedido } from './Pedido'
 @Entity()
 export class Cliente {
   @PrimaryGeneratedColumn('uuid')
-  id: number
+  id: string
 
   @Column({type: 'varchar', name: 'telefone', length: 100, unique: true})
   telefone: string

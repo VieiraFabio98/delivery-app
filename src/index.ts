@@ -1,12 +1,15 @@
 import 'reflect-metadata'
 import 'dotenv/config'
 import Fastify from 'fastify'
-import { webhookRoutes } from './routes/webhook'
 import { AppDataSource } from './database/data-source'
+import { apiRoutes } from '@app/http/routes'
+import { webhookRoutes } from '@app/http/routes/webhook'
+
 
 const app = Fastify({ logger: true })
 
 app.register(webhookRoutes, { prefix: '/webhook' })
+app.register(apiRoutes, { prefix: '/api' })
 
 app.get('/health', async () => ({ status: 'ok' }))
 

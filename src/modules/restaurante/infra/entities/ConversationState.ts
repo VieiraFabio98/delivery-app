@@ -9,7 +9,7 @@ export type ConversationStep =
   | 'concluido'
 
 export interface CarrinhoItem {
-  produtoId: number
+  produtoId: string
   nome: string
   preco: number
   quantidade: number
@@ -18,7 +18,7 @@ export interface CarrinhoItem {
 @Entity()
 export class ConversationState {
   @PrimaryGeneratedColumn('uuid')
-  id: number
+  id: string
 
   @Column({type: 'varchar', name: 'telefone', length: 100, unique: true})
   telefone: string
@@ -30,7 +30,7 @@ export class ConversationState {
   carrinho: CarrinhoItem[]
 
   @Column({ nullable: true })
-  categoriaId: number
+  categoriaId: string
 
   @CreateDateColumn({ name: "created_at", type: "timestamp" })
   createdAt: Date

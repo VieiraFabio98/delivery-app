@@ -5,5 +5,5 @@ export const getConfig = (): DataSourceOptions => ({
   url: process.env.DATABASE_URL,
   synchronize: true,
   logging: process.env.NODE_ENV !== 'production',
-  entities: ['src/entities/*.ts'],
+  entities: ['src/modules/**/infra/entities/*.ts'],
 })
