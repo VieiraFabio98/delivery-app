@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm'
 import { Categoria } from './Categoria'
 import { ItemPedido } from './ItemPedido'
 
@@ -19,7 +19,11 @@ export class Produto {
   @Column({ default: true })
   ativo: boolean
 
+  @Column()
+  categoriaId: string
+
   @ManyToOne(() => Categoria, categoria => categoria.produtos)
+  @JoinColumn({ name: 'categoriaId' })
   categoria: Categoria
 
   @OneToMany(() => ItemPedido, item => item.produto)

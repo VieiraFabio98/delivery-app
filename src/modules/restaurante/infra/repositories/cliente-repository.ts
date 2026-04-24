@@ -17,7 +17,8 @@ class ClienteRepository implements IClienteRepository {
 
   async get(id: string): Promise<ICliente | null> {
     try {
-      return this.repository.findOne({ where: { id } })
+      const cliente = await this.repository.findOne({ where: { id } })
+      return cliente
     } catch(error) {
       throw error
     }

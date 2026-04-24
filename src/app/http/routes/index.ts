@@ -1,9 +1,11 @@
 import { FastifyInstance } from 'fastify'
 import { categoriaRoutes } from './application-routes/categoria.routes'
 import { clienteRoutes } from './application-routes/cliente.routes'
+import { produtoRoutes } from './application-routes/produto.routes'
 
 
 export async function apiRoutes(app: FastifyInstance) {
   app.register(categoriaRoutes, { prefix: '/categorias' })
   app.register(clienteRoutes, { prefix: '/clientes' })
+  app.register(produtoRoutes, { prefix: '/produtos' })
 }

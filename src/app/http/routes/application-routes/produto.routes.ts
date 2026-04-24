@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify'
-import { create, list, get, update, remove } from '@modules/restaurante/infra/controllers/cliente-controller'
+import { create, list, get, update, remove } from '@modules/restaurante/infra/controllers/produto-controller'
 
-export async function clienteRoutes(app: FastifyInstance) {
+export async function produtoRoutes(app: FastifyInstance) {
   app.post('/', create)
   app.get('/list', list)
   app.get('/:id', get)
