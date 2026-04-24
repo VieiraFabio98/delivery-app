@@ -9,7 +9,7 @@ export class Cliente {
   @Column({type: 'varchar', name: 'telefone', length: 100, unique: true})
   telefone: string
 
-  @Column({type: 'varchar', name: 'nome', length: 100, unique: true})
+  @Column({type: 'varchar', name: 'nome', length: 100})
   nome: string
 
   @OneToMany(() => Pedido, pedido => pedido.cliente)

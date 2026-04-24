@@ -1,4 +1,4 @@
-import { ICategoria } from "../entities/i-categoria";
+import { ICategoria } from "../../entities/i-categoria";
 
 
 export interface ICategoriaReadRepository {

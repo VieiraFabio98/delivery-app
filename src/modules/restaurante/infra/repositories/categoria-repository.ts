@@ -1,6 +1,6 @@
 import { ICreateCategoriaDTO, IUpdateCategoriaDTO } from "@modules/restaurante/application/dto/i-categoria-dto"
 import { ICategoria } from "@modules/restaurante/domain/entities/i-categoria"
-import { ICategoriaRepository } from "@modules/restaurante/domain/repositories/i-categoria-repository"
+import { ICategoriaRepository } from "@modules/restaurante/domain/repositories/categoria/i-categoria-repository"
 import { Categoria } from "../entities/Categoria"
 import { Repository } from "typeorm"
 import { appDataSource } from "@database/data-source"

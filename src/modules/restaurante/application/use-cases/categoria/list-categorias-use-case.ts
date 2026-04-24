@@ -1,5 +1,5 @@
 import { inject, injectable } from "tsyringe"
-import { ICategoriaRepository } from "@modules/restaurante/domain/repositories/i-categoria-repository"
+import { ICategoriaRepository } from "@modules/restaurante/domain/repositories/categoria/i-categoria-repository"
 import { ok, HttpResponse, serverError } from "shared/helpers"
 
 @injectable()
