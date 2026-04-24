@@ -8,4 +8,5 @@ export async function apiRoutes(app: FastifyInstance) {
   app.register(categoriaRoutes, { prefix: '/categorias' })
   app.register(clienteRoutes, { prefix: '/clientes' })
   app.register(produtoRoutes, { prefix: '/produtos' })
+  app.register(produtoRoutes, { prefix: '/pedidos' })
 }

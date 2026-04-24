@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm'
 import { Pedido } from './Pedido'
 import { Produto } from './Produto'
 
@@ -10,7 +10,11 @@ export class ItemPedido {
   @ManyToOne(() => Pedido, pedido => pedido.itens)
   pedido: Pedido
 
+  @Column()
+  produtoId: string
+
   @ManyToOne(() => Produto, produto => produto.itens)
+  @JoinColumn({ name: 'produtoId' })
   produto: Produto
 
   @Column()

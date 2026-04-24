@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm'
 import { Cliente } from './Cliente'
 import { ItemPedido } from './ItemPedido'
 
@@ -9,11 +9,18 @@ export class Pedido {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
+  @Column()
+  clientId: string
+
   @ManyToOne(() => Cliente, cliente => cliente.pedidos)
+  @JoinColumn({ name: 'clientId' })
   cliente: Cliente
 
   @Column({ default: 'aguardando_pagamento' })
   status: PedidoStatus
+
+  @Column({ enum: ['pix', 'cartao'] })
+  formaPagamento: 'pix' | 'cartao'
 
   @Column('decimal', { precision: 10, scale: 2, default: 0 })
   total: number
