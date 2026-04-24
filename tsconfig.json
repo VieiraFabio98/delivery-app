@@ -13,6 +13,7 @@
       "@database/*": ["database/*"],
       "@modules/*": ["modules/*"],
       "@services/*": ["services/*"],
+      "@shared/*": ["shared/*"],
     },
     "strict": true,
     "experimentalDecorators": true,

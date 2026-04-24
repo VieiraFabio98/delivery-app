@@ -1,7 +1,5 @@
-import { ICreateCategoriaDTO } from "@modules/restaurante/application/dto/i-categoria-dto"
-import { ICategoria } from "../entities/i-categoria"
+import { ICategoriaReadRepository } from "./i-categoria-read-repository"
+import { ICategoriaWriteRepository } from "./i-categoria-write-repository"
 
 
-export interface ICategoriaRepository {
-  create(data: ICreateCategoriaDTO): Promise<ICategoria>
-}
+export interface ICategoriaRepository extends ICategoriaReadRepository, ICategoriaWriteRepository {}

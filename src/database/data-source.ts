@@ -1,4 +1,4 @@
 import { DataSource } from 'typeorm'
 import { getConfig } from './config'
 
-export const AppDataSource = new DataSource(getConfig())
+export const appDataSource = new DataSource(getConfig())

@@ -1,9 +1,10 @@
 import 'reflect-metadata'
 import 'dotenv/config'
 import Fastify from 'fastify'
-import { AppDataSource } from './database/data-source'
+import { appDataSource } from './database/data-source'
 import { apiRoutes } from '@app/http/routes'
 import { webhookRoutes } from '@app/http/routes/webhook'
+import '@shared/container'
 
 
 const app = Fastify({ logger: true })
@@ -15,9 +16,9 @@ app.get('/health', async () => ({ status: 'ok' }))
 
 const start = async () => {
   try {
-    await AppDataSource.initialize().then(() => {
+    await appDataSource.initialize().then(() => {
       console.log('Data Source has been initialized!')
-      console.log('Registered Entities: ', AppDataSource.entityMetadatas.map(entity => entity.name))
+      console.log('Registered Entities: ', appDataSource.entityMetadatas.map(entity => entity.name))
     })
     app.log.info('Banco de dados conectado')
     await app.listen({ port: 3000, host: '0.0.0.0' })

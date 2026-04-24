@@ -1,32 +1,52 @@
-// src/controllers/categoriaController.ts
-import { FastifyRequest, FastifyReply } from 'fastify'
-import { AppDataSource } from '../../../../database/data-source'
-import { Categoria } from '../entities/Categoria'
+import { FastifyRequest, FastifyReply } from "fastify"
+import { container } from "tsyringe"
+import { ICreateCategoriaDTO, IUpdateCategoriaDTO } from "@modules/restaurante/application/dto/i-categoria-dto"
+import { CreateCategoriaUseCase } from "@modules/restaurante/application/use-cases/categoria/create-categoria-use-case"
+import { GetCategoriaUseCase } from "@modules/restaurante/application/use-cases/categoria/get-categoria-use-case"
+import { ListCategoriasUseCase } from "@modules/restaurante/application/use-cases/categoria/list-categorias-use-case"
+import { UpdateCategoriaUseCase } from "@modules/restaurante/application/use-cases/categoria/update-categoria-use-case"
+import { DeleteCategoriaUseCase } from "@modules/restaurante/application/use-cases/categoria/delete-categoria-use-case"
 
-const repo = AppDataSource.getRepository(Categoria)
+export async function create(request: FastifyRequest<{ Body: ICreateCategoriaDTO }>, reply: FastifyReply) {
+  const { nome, ordem } = request.body
 
-export async function listCategorias(request: FastifyRequest, reply: FastifyReply) {
-  const categorias = await repo.find({
-    order: { ordem: 'ASC', nome: 'ASC' },
-  })
+  const createUseCase = container.resolve(CreateCategoriaUseCase)
+  const result = await createUseCase.execute({ nome, ordem })
 
-  return reply.send(categorias)
+  return reply.status(result.statusCode).send(result)
 }
 
-export async function getCategoriaById(
-  request: FastifyRequest<{ Params: { id: string } }>,
-  reply: FastifyReply,
-) {
+export async function list(_request: FastifyRequest, reply: FastifyReply) {
+  const listUseCase = container.resolve(ListCategoriasUseCase)
+  const result = await listUseCase.execute()
+
+  return reply.status(result.statusCode).send(result)
+}
+
+export async function get(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
   const { id } = request.params
 
-  const categoria = await repo.findOne({
-    where: { id },
-    relations: { produtos: true },
-  })
+  const getUseCase = container.resolve(GetCategoriaUseCase)
+  const result = await getUseCase.execute(id)
 
-  if (!categoria) {
-    return reply.status(404).send({ error: 'Categoria não encontrada' })
-  }
+  return reply.status(result.statusCode).send(result)
+}
 
-  return reply.send(categoria)
+export async function update(request: FastifyRequest<{ Params: { id: string }, Body: IUpdateCategoriaDTO }>, reply: FastifyReply) {
+  const { id } = request.params
+  const body = request.body
+
+  const updateUseCase = container.resolve(UpdateCategoriaUseCase)
+  const result = await updateUseCase.execute(id, body)
+
+  return reply.status(result.statusCode).send(result)
+}
+
+export async function remove(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
+  const { id } = request.params
+
+  const deleteUseCase = container.resolve(DeleteCategoriaUseCase)
+  const result = await deleteUseCase.execute(id)
+
+  return reply.status(result.statusCode).send(result)
 }
