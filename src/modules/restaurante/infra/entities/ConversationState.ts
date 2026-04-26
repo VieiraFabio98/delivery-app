@@ -1,19 +1,5 @@
+import { CarrinhoItem, ConversationStep } from '@modules/restaurante/domain/entities/i-conversation-state'
 import { Entity, PrimaryGeneratedColumn, Column, UpdateDateColumn, CreateDateColumn } from 'typeorm'
-
-export type ConversationStep =
-  | 'inicio'
-  | 'menu_categoria'
-  | 'menu_produto'
-  | 'carrinho'
-  | 'aguardando_pagamento'
-  | 'concluido'
-
-export interface CarrinhoItem {
-  produtoId: string
-  nome: string
-  preco: number
-  quantidade: number
-}
 
 @Entity()
 export class ConversationState {
@@ -23,14 +9,11 @@ export class ConversationState {
   @Column({type: 'varchar', name: 'telefone', length: 100, unique: true})
   telefone: string
 
-  @Column({type: 'varchar', name: 'etapa', length: 100, unique: true})
+  @Column({type: 'varchar', name: 'etapa', length: 100})
   etapa: ConversationStep
 
-  @Column('jsonb', { default: [] })
+  @Column('jsonb', { default: [], nullable: true })
   carrinho: CarrinhoItem[]
-
-  @Column({ nullable: true })
-  categoriaId: string
 
   @CreateDateColumn({ name: "created_at", type: "timestamp" })
   createdAt: Date
