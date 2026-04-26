@@ -1,6 +1,7 @@
 const BASE_URL = 'https://graph.facebook.com/v19.0'
 
 export class WhatsAppService {
+  private isDev = process.env.ENVIRONMENT === 'dev'
   private readonly phoneNumberId: string
   private readonly accessToken: string
 
@@ -52,6 +53,16 @@ export class WhatsAppService {
   }
 
   private async send(to: string, payload: object): Promise<void> {
+
+    if(this.isDev){
+      await fetch('http://localhost:3000/simulator/message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to, body: payload }),
+      })
+      return
+    }
+
     const response = await fetch(`${BASE_URL}/${this.phoneNumberId}/messages`, {
       method: 'POST',
       headers: {
