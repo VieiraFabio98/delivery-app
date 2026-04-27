@@ -23,7 +23,7 @@ Aplicação de pedidos online onde o cliente interage com a loja pelo WhatsApp (
 - **WhatsApp**: Meta Cloud API (oficial)
 - **Pagamentos**: Mercado Pago (Pix + cartão em uma única integração BR)
 - **Banco**: PostgreSQL + TypeORM
-- **Admin**: Next.js + shadcn/ui
+- **Admin**: React + Vite + shadcn/ui (pasta `frontend/`, já inicializada)
 - **Hospedagem**: a definir (Railway/Render para backend, Vercel para admin)
 
 ## Roadmap de implementação
@@ -60,9 +60,11 @@ Ordem recomendada — cada etapa destrava a próxima, não pular.
 - [ ] Mesmo fluxo de webhook para confirmação.
 
 ### [ ] Etapa 6 — Painel admin web
-- [ ] Next.js + shadcn/ui consumindo a mesma API do backend.
-- [ ] Auth simples (NextAuth).
+- [ ] React + Vite + shadcn/ui em `frontend/` (já inicializado) consumindo a API do backend.
+- [ ] Auth simples via JWT (login com usuário/senha, sem NextAuth).
 - [ ] CRUD de produtos/cardápio, lista de pedidos, atualização de status.
+- [ ] Página pública `/cardapio` acessível sem login (exibe cardápio da loja com categorias e produtos ativos).
+- [ ] Bot envia link do cardápio público durante a conversa (ex: quando cliente digita "cardápio" ou no menu inicial).
 
 ## Pontos de atenção (vale para todas as etapas)
 
@@ -83,3 +85,5 @@ Tabela oficial: `developers.facebook.com/docs/whatsapp/pricing` (muda com frequ�
 ## Estado atual
 
 Etapas 1 e 2 concluídas. Etapa 3 em andamento: entidades e DataSource prontos, falta `WhatsAppService`, `ConversationService`, handler do fluxo de conversa e seed. Próximo passo: implementar os serviços e o handler do webhook.
+
+Frontend em `frontend/` já inicializado com React + Vite + shadcn/ui. Será usado para o painel admin e para uma página pública de cardápio.

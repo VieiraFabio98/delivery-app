@@ -138,28 +138,39 @@ POST /webhook/mercadopago
 
 ---
 
-## Etapa 6 — Painel admin web
+## Etapa 6 — Painel admin web + Cardápio público
 
 ### Stack
 
-- Next.js 14 (App Router)
-- shadcn/ui + Tailwind CSS
-- NextAuth (autenticação simples com usuário/senha ou Google)
+- React + Vite + shadcn/ui + Tailwind CSS (pasta `frontend/`, já inicializada)
+- Autenticação via JWT (login com usuário/senha, sem NextAuth)
 - Consome a API REST do backend (mesmo Fastify)
 
 ### Páginas
 
-| Página | Funcionalidade |
-|---|---|
-| `/login` | autenticação do operador |
-| `/pedidos` | lista de pedidos com status em tempo real |
-| `/pedidos/[id]` | detalhe do pedido + botões de atualização de status |
-| `/cardapio` | CRUD de categorias e produtos |
-| `/cardapio/novo` | formulário para criar produto |
+| Página | Acesso | Funcionalidade |
+|---|---|---|
+| `/login` | público | autenticação do operador |
+| `/pedidos` | admin | lista de pedidos com status em tempo real |
+| `/pedidos/:id` | admin | detalhe do pedido + botões de atualização de status |
+| `/cardapio/admin` | admin | CRUD de categorias e produtos |
+| `/cardapio` | **público** | cardápio da loja para o cliente acessar via link enviado pelo bot |
+
+### Cardápio público
+
+- Rota `/cardapio` não exige login — qualquer pessoa com o link pode acessar.
+- Exibe categorias e produtos ativos com nome, descrição e preço.
+- O bot envia o link durante a conversa (ex: ao iniciar atendimento ou quando cliente pede "ver cardápio").
+- URL base configurada em variável de ambiente `FRONTEND_URL` no backend.
 
 ### Endpoints de API necessários (backend)
 
 ```
+# Públicos (sem autenticação)
+GET    /cardapio                    → categorias + produtos ativos
+
+# Admin (requer JWT)
+POST   /admin/login
 GET    /admin/pedidos
 GET    /admin/pedidos/:id
 PATCH  /admin/pedidos/:id/status
@@ -169,16 +180,29 @@ PUT    /admin/produtos/:id
 DELETE /admin/produtos/:id
 GET    /admin/categorias
 POST   /admin/categorias
+PUT    /admin/categorias/:id
+DELETE /admin/categorias/:id
 ```
+
+### Fluxo de autenticação admin
+
+1. Operador acessa `/login` → envia usuário/senha.
+2. Backend valida e retorna JWT com expiração.
+3. Frontend armazena token em `localStorage` e envia em todas as requisições admin (`Authorization: Bearer <token>`).
+4. Rotas admin no Fastify protegidas com middleware de verificação JWT.
 
 ### Tarefas técnicas
 
-- [ ] Criar projeto Next.js em `packages/admin` (monorepo) ou repo separado
-- [ ] Configurar NextAuth
-- [ ] Implementar endpoints `/admin/*` no Fastify com autenticação via JWT
-- [ ] Criar páginas de listagem e detalhe de pedidos
-- [ ] Criar CRUD de cardápio
-- [ ] Deploy: Vercel para admin, Railway/Render para backend
+- [ ] Implementar endpoints `/cardapio` (público) e `/admin/*` no Fastify com JWT
+- [ ] Criar entidade `Usuario` (admin) e seed com usuário inicial
+- [ ] Configurar React Router no frontend (`frontend/`)
+- [ ] Criar página `/login` com formulário e lógica de autenticação
+- [ ] Criar página `/cardapio` (pública) com listagem de categorias e produtos
+- [ ] Criar página `/pedidos` com listagem e filtro por status
+- [ ] Criar página `/pedidos/:id` com detalhe e atualização de status
+- [ ] Criar página `/cardapio/admin` com CRUD completo
+- [ ] Adicionar envio do link do cardápio no handler do WhatsApp (etapa 3)
+- [ ] Deploy: Vercel para frontend, Railway/Render para backend
 
 ---
 
@@ -204,4 +228,5 @@ MP_WEBHOOK_SECRET=
 
 # Admin
 JWT_SECRET=
+FRONTEND_URL=http://localhost:5173
 ```
