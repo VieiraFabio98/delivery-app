@@ -1,4 +1,5 @@
 import { ConversationState } from '@modules/restaurante/infra/entities/ConversationState'
+import { ProdutoRepository } from '@modules/restaurante/infra/repositories/produto-repository'
 import { ConversationStateService } from '@services/conversation-state.service'
 import { WhatsAppService } from '@services/whats-app.service'
 import { serverError } from '@shared/helpers'
@@ -50,10 +51,43 @@ export async function webhookRoutes(app: FastifyInstance) {
 async function handleMessage(message: any, telefone: string, conversationsStateService: ConversationStateService, whatsAppService: WhatsAppService) {
   try {
     const state = await conversationsStateService.getState(telefone)
+    const text =
+      message?.text?.body ??
+      message?.interactive?.button_reply?.id ??
+      message?.interactive?.list_reply?.id ??
+      null
     
     switch(state?.etapa) {
       case 'inicio':
-        await whatsAppService.sendText(telefone, 'Bem-vindo! Digite "menu" para ver as opções.')
+        await whatsAppService.sendText(telefone, 'Olá! Bem-vindo ao Tozetto 🍔')
+        await whatsAppService.sendButtons(telefone, 'O que deseja fazer?', [
+          { id: 'ver_cardapio', title: 'Ver cardápio' },
+          { id: 'meus_pedidos', title: 'Meus pedidos' },
+          { id: 'limpar_carrinho', title: 'Limpar carrinho' },
+        ])
+        await conversationsStateService.setStep(telefone, 'menu_principal')
+        break
+
+      case 'menu_principal':
+        if(text === 'ver_cardapio') {
+          const produtoRepository = container.resolve(ProdutoRepository)
+          const produtos = await produtoRepository.list()
+          
+        }
+    }
+
+    const messageId = message.interactive?.button_reply?.id
+
+    switch(messageId) {
+      case 'ver_cardapio':
+        
+        await whatsAppService.sendText(telefone, 'Aqui está o nosso cardápio: https://tozetto.com.br/cardapio')
+        break
+      case 'meus_pedidos':
+        await whatsAppService.sendText(telefone, 'Você ainda não fez nenhum pedido.')
+        break
+      case 'limpar_carrinho':
+        await whatsAppService.sendText(telefone, 'Seu carrinho foi limpo.')
         break
     }
 

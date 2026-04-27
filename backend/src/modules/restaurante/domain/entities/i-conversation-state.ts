@@ -1,8 +1,7 @@
 export type ConversationStep =
   | 'inicio'
-  | 'menu_categoria'
-  | 'menu_produto'
-  | 'carrinho'
+  | 'menu_principal'
+  | 'aguardando_pedido'
   | 'aguardando_pagamento'
   | 'concluido'
 

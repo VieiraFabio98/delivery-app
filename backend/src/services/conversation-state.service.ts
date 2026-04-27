@@ -1,5 +1,5 @@
 import { appDataSource } from "@database/data-source"
-import { IConversationState } from "@modules/restaurante/domain/entities/i-conversation-state"
+import { ConversationStep, IConversationState } from "@modules/restaurante/domain/entities/i-conversation-state"
 import { ConversationState } from "@modules/restaurante/infra/entities/ConversationState"
 import { serverError } from "@shared/helpers"
 import { Repository } from "typeorm"
@@ -26,6 +26,18 @@ class ConversationStateService {
 
       return state
 
+    } catch(error) {
+      throw serverError(error as Error)
+    }
+  }
+
+  async setStep(telefone: string, step: ConversationStep ): Promise<IConversationState | null> {
+    try {
+      const state = await this.conversationStateRepository.findOneBy({ telefone})
+      if(!state) return null
+
+      state.etapa = step 
+      return await this.conversationStateRepository.save(state)
     } catch(error) {
       throw serverError(error as Error)
     }
