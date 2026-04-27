@@ -7,35 +7,11 @@ import { Label } from '@/components/ui/label'
 export default function Login() {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
-  const [senha, setSenha] = useState('')
-  const [erro, setErro] = useState('')
-  const [carregando, setCarregando] = useState(false)
+  const [password, setPassword] = useState('')
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault()
-    setErro('')
-    setCarregando(true)
-
-    try {
-      const res = await fetch('/api/admin/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, senha }),
-      })
-
-      if (!res.ok) {
-        setErro('E-mail ou senha inválidos.')
-        return
-      }
-
-      const { token } = await res.json()
-      localStorage.setItem('token', token)
-      navigate('/pedidos')
-    } catch {
-      setErro('Erro ao conectar com o servidor.')
-    } finally {
-      setCarregando(false)
-    }
+    navigate('/home')
   }
 
   return (
@@ -63,28 +39,26 @@ export default function Login() {
                 id="email"
                 type="email"
                 autoComplete="email"
-                required
+                // required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
             <div className="space-y-1">
-              <Label htmlFor="senha">Senha</Label>
+              <Label htmlFor="password">Senha</Label>
               <Input
-                id="senha"
+                id="password"
                 type="password"
                 autoComplete="current-password"
-                required
-                value={senha}
-                onChange={(e) => setSenha(e.target.value)}
+                // required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
 
-            {erro && <p className="text-sm text-destructiv">{erro}</p>}
-
-            <Button type="submit" className="w-full hover:bg-brand/150" disabled={carregando}>
-              {carregando ? 'Entrando…' : 'Entrar'}
+            <Button type="submit" className="w-full">
+              Entrar
             </Button>
           </form>
         </div>
