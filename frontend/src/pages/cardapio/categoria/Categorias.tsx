@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import ListPage, { type ColumnDef } from "@/components/list-page/ListPage"
-import CategoriaDialog from "@/components/list-page/CategoriaDialog"
+import CategoriaDialog from "@/pages/cardapio/categoria/CategoriaDialog"
 import { categoriaService, type Categoria } from "@/services/categoria.service"
 
 const COLUMNS: ColumnDef<Categoria>[] = [
@@ -11,12 +11,14 @@ export default function Categorias() {
   const [dialogAberto, setDialogAberto] = useState(false)
   const [categorias, setCategorias] = useState<Categoria[]>([])
   const [loading, setLoading] = useState(true)
+  const [refresh, setRefresh] = useState({})
 
   useEffect(() => {
+    setLoading(true)
     categoriaService.listar()
       .then((res) => setCategorias(res.data))
       .finally(() => setLoading(false))
-  }, [])
+  }, [refresh])
 
   return (
     <>
@@ -29,7 +31,10 @@ export default function Categorias() {
       />
       <CategoriaDialog
         open={dialogAberto}
-        onClose={() => setDialogAberto(false)}
+        onClose={() => { 
+          setDialogAberto(false) 
+          setRefresh({}) 
+        }}
       />
     </>
   )

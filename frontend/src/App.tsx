@@ -4,7 +4,7 @@ import Home from "./pages/Home";
 import Pedidos from "./pages/pedidos/Pedidos";
 import Conversas from "./pages/conversas/Conversas";
 import Produtos from "./pages/cardapio/Produtos";
-import Categorias from "./pages/cardapio/Categorias";
+import Categorias from "./pages/cardapio/categoria/Categorias";
 import Clientes from "./pages/clientes/Clientes";
 
 export function App() {

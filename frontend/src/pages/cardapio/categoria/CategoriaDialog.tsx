@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { categoriaService } from "@/shared/http/categoria"
+// import { categoriaService } from "@/shared/http/categoria"
 import { AxiosHttpClient } from "@/services/axios-http-client.service"
 import { IResponse } from "@/shared/interfaces/i-response"
 import { toast } from "sonner"
@@ -27,7 +27,7 @@ export default function CategoriaDialog({ open, onClose }: CategoriaDialogProps)
     try {
       const result: IResponse =  await axios.post("/categorias", { nome })
       if(result.statusCode === 201) {
-        toast.success("Categoria cadastrada com sucesso!", )
+        toast.success("Categoria cadastrada com sucesso!")
       }
       setNome("")
     } catch(error) {

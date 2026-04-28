@@ -10,7 +10,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail,
 } from "@/components/ui/sidebar"
 import { VersionSwitcher } from "./version-switcher"
 import { SearchForm } from "./search-form"
