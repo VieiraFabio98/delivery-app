@@ -1,7 +1,6 @@
 export interface ICategoria {
   id: string
   nome: string
-  ordem: number
-  createdAt: Date
+createdAt: Date
   updatedAt: Date
 }

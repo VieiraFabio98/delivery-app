@@ -24,7 +24,7 @@ class CategoriaRepository implements ICategoriaRepository {
 
   async list(): Promise<ICategoria[]> {
     try {
-      return this.repository.find({ order: { ordem: 'ASC' } })
+      return this.repository.find({ order: { nome: 'ASC' } })
     } catch(error) {
       throw error
     }

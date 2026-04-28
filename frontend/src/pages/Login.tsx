@@ -11,7 +11,7 @@ export default function Login() {
 
   function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault()
-    navigate('/home')
+    navigate('/')
   }
 
   return (

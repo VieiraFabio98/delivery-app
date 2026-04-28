@@ -1,4 +1,5 @@
 import * as React from "react"
+import { NavLink } from "react-router-dom"
 import {
   Sidebar,
   SidebarContent,
@@ -77,13 +78,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <SidebarMenu className="gap-1">
                 {item.items.map((item) => (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={item.isActive}
-                      className="transition-colors duration-200 hover:bg-amber-200! hover:text-black!"
-                    >
-                      <a href={item.url}>{item.title}</a>
-                    </SidebarMenuButton>
+                    <NavLink to={item.url}>
+                      {({ isActive }) => (
+                        <SidebarMenuButton
+                          isActive={isActive}
+                          className="transition-colors duration-200 hover:bg-amber-200! hover:text-black!"
+                        >
+                          {item.title}
+                        </SidebarMenuButton>
+                      )}
+                    </NavLink>
                   </SidebarMenuItem>
                 ))}
               </SidebarMenu>

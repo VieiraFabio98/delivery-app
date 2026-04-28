@@ -9,10 +9,7 @@ export class Categoria {
   @Column({type: 'varchar', name: 'nome', length: 100})
   nome: string
 
-  @Column({type: 'integer', name: 'ordem', default: 0})
-  ordem: number
-
-  @OneToMany(() => Produto, produto => produto.categoria)
+@OneToMany(() => Produto, produto => produto.categoria)
   produtos: Produto[]
 
   @CreateDateColumn({ name: "created_at", type: "timestamp" })

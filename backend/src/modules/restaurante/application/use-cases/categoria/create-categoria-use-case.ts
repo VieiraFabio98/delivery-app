@@ -14,8 +14,7 @@ class CreateCategoriaUseCase {
   async execute(data: ICreateCategoriaDTO): Promise<HttpResponse> {
     try {
       const categoria = await this.categoriaRepository.create({
-        nome: data.nome,
-        ordem: data.ordem
+        nome: data.nome
       })
 
       return created(categoria)

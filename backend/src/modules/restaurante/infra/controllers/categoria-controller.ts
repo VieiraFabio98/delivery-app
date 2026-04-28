@@ -10,10 +10,10 @@ import { DeleteCategoriaUseCase } from "@modules/restaurante/application/use-cas
 
 
 export async function create(request: FastifyRequest<{ Body: ICreateCategoriaDTO }>, reply: FastifyReply) {
-  const { nome, ordem } = request.body
+  const { nome } = request.body
 
   const createUseCase = container.resolve(CreateCategoriaUseCase)
-  const result = await createUseCase.execute({ nome, ordem })
+  const result = await createUseCase.execute({ nome })
 
   return reply.status(result.statusCode).send(result)
 }
