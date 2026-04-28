@@ -1,6 +1,15 @@
+import * as React from "react"
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+  RowSelectionState,
+} from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
-import { Plus, Pencil, Trash2 } from "lucide-react"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "../ui/separator"
+import { Plus, Pencil, Trash2 } from "lucide-react"
 import {
   Table,
   TableBody,
@@ -10,23 +19,19 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-interface Column<T> {
-  label: string
-  key: keyof T
-  hidden?: boolean
-}
+export type { ColumnDef }
 
-interface ListPageProps<T extends Record<string, unknown>> {
+interface ListPageProps<TData> {
   title: string
-  columns: Column<T>[]
-  data: T[]
+  columns: ColumnDef<TData>[]
+  data: TData[]
   loading?: boolean
   onCriar?: () => void
-  onEditar?: () => void
-  onExcluir?: () => void
+  onEditar?: (row: TData) => void
+  onExcluir?: (row: TData) => void
 }
 
-export default function ListPage<T extends Record<string, unknown>>({
+export default function ListPage<TData>({
   title,
   columns,
   data,
@@ -34,7 +39,50 @@ export default function ListPage<T extends Record<string, unknown>>({
   onCriar,
   onEditar,
   onExcluir,
-}: ListPageProps<T>) {
+}: ListPageProps<TData>) {
+  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({})
+
+  const columnsWithSelect: ColumnDef<TData>[] = [
+    {
+      id: "select",
+      size: 40,
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected()
+              ? true
+              : table.getIsSomePageRowsSelected()
+              ? "indeterminate"
+              : false
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Selecionar todos"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Selecionar linha"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    ...columns,
+  ]
+
+  const table = useReactTable({
+    data,
+    columns: columnsWithSelect,
+    getCoreRowModel: getCoreRowModel(),
+    onRowSelectionChange: setRowSelection,
+    state: { rowSelection },
+  })
+
+  const selectedRows = table.getSelectedRowModel().rows.map((r) => r.original)
+  const singleSelected = selectedRows.length === 1 ? selectedRows[0] : undefined
+
   return (
     <div className="flex flex-col gap-5">
       <h1 className="text-4xl font-semibold">{title}</h1>
@@ -43,48 +91,76 @@ export default function ListPage<T extends Record<string, unknown>>({
           <Plus className="w-4 h-4 mr-1" />
           Criar
         </Button>
-        <Button variant="outline" size="sm" onClick={onEditar}>
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={!singleSelected}
+          onClick={() => singleSelected && onEditar?.(singleSelected)}
+        >
           <Pencil className="w-4 h-4 mr-1" />
           Editar
         </Button>
-        <Button variant="destructive" size="sm" onClick={onExcluir}>
+        <Button
+          variant="destructive"
+          size="sm"
+          disabled={selectedRows.length === 0}
+          onClick={() => singleSelected && onExcluir?.(singleSelected)}
+        >
           <Trash2 className="w-4 h-4 mr-1" />
           Excluir
         </Button>
       </div>
       <Separator className="h-0.5" />
-      <Table>
-        <TableHeader>
-          <TableRow>
-            {columns.filter((col) => !col.hidden).map((col) => (
-              <TableHead key={String(col.key)}>{col.label}</TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {loading ? (
-            <TableRow>
-              <TableCell colSpan={columns.filter((c) => !c.hidden).length} className="text-center text-muted-foreground">
-                Carregando...
-              </TableCell>
-            </TableRow>
-          ) : data.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={columns.filter((c) => !c.hidden).length} className="text-center text-muted-foreground">
-                Nenhum registro encontrado.
-              </TableCell>
-            </TableRow>
-          ) : (
-            data.map((row, i) => (
-              <TableRow key={i}>
-                {columns.filter((col) => !col.hidden).map((col) => (
-                  <TableCell key={String(col.key)}>{String(row[col.key] ?? '')}</TableCell>
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    style={header.column.getSize() !== 150 ? { width: header.column.getSize() } : undefined}
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableHead>
                 ))}
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={columnsWithSelect.length} className="h-24 text-center text-muted-foreground">
+                  Carregando...
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={columnsWithSelect.length} className="h-24 text-center text-muted-foreground">
+                  Nenhum registro encontrado.
+                </TableCell>
+              </TableRow>
+            ) : (
+              table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+      {selectedRows.length > 0 && (
+        <p className="text-sm text-muted-foreground">
+          {selectedRows.length} registro(s) selecionado(s).
+        </p>
+      )}
     </div>
   )
 }

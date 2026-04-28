@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react"
-import ListPage from "@/components/list-page/ListPage"
+import ListPage, { type ColumnDef } from "@/components/list-page/ListPage"
 import CategoriaDialog from "@/components/list-page/CategoriaDialog"
 import { categoriaService, type Categoria } from "@/services/categoria.service"
 
-const COLUMNS = [
-  { label: "id", key: "id" as const, hidden: true },
-  { label: "Nome", key: "nome" as const },
+const COLUMNS: ColumnDef<Categoria>[] = [
+  { accessorKey: "nome", header: "Nome" },
 ]
 
 export default function Categorias() {
