@@ -19,11 +19,11 @@ export class Produto {
   @Column({ default: true })
   ativo: boolean
 
-  @Column()
+  @Column({ name: 'categoria_id' })
   categoriaId: string
 
-  @ManyToOne(() => Categoria, categoria => categoria.produtos)
-  @JoinColumn({ name: 'categoriaId' })
+  @ManyToOne(() => Categoria, categoria => categoria.nome)
+  @JoinColumn({ name: 'categoria_id' })
   categoria: Categoria
 
   @OneToMany(() => ItemPedido, item => item.produto)

@@ -9,16 +9,17 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { categoriaService } from "@/services/categoria.service"
+import { categoriaService } from "@/services/categorias.service"
 import { toast } from "sonner"
 
 interface CategoriaDialogProps {
   open: boolean
   onClose: () => void
+  onSaved?: () => void
   categoriaId?: string
 }
 
-export default function CategoriaDialog({ open, onClose, categoriaId }: CategoriaDialogProps) {
+export default function CategoriaEdit({ open, onClose, onSaved, categoriaId }: CategoriaDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent>
@@ -26,6 +27,7 @@ export default function CategoriaDialog({ open, onClose, categoriaId }: Categori
           key={categoriaId ?? "novo"}
           categoriaId={categoriaId}
           onClose={onClose}
+          onSaved={onSaved}
         />
       </DialogContent>
     </Dialog>
@@ -35,9 +37,10 @@ export default function CategoriaDialog({ open, onClose, categoriaId }: Categori
 interface CategoriaFormProps {
   categoriaId?: string
   onClose: () => void
+  onSaved?: () => void
 }
 
-function CategoriaForm({ categoriaId, onClose }: CategoriaFormProps) {
+function CategoriaForm({ categoriaId, onClose, onSaved }: CategoriaFormProps) {
   const isEdicao = !!categoriaId
   const [nome, setNome] = useState("")
   const [carregando, setCarregando] = useState(isEdicao)
@@ -45,7 +48,7 @@ function CategoriaForm({ categoriaId, onClose }: CategoriaFormProps) {
   useEffect(() => {
     if (!categoriaId) return
 
-    categoriaService.buscar(categoriaId)
+    categoriaService.get(categoriaId)
       .then((res) => setNome(res.data.nome))
       .catch((error) => {
         console.error("Erro ao buscar categoria:", error)
@@ -57,12 +60,12 @@ function CategoriaForm({ categoriaId, onClose }: CategoriaFormProps) {
   async function handleSalvar() {
     try {
       const result = isEdicao
-        ? await categoriaService.atualizar(categoriaId!, nome)
-        : await categoriaService.criar(nome)
+        ? await categoriaService.update(categoriaId!, nome)
+        : await categoriaService.create(nome)
 
       if (result.statusCode === 200 || result.statusCode === 201) {
         toast.success(isEdicao ? "Categoria atualizada com sucesso!" : "Categoria cadastrada com sucesso!")
-        onClose()
+        onSaved ? onSaved() : onClose()
       }
     } catch (error) {
       console.error("Erro ao salvar categoria:", error)

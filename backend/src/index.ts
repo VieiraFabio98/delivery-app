@@ -12,8 +12,10 @@ import { scheduleConversationCleanup } from 'jobs/clen-up-conversation.job'
 
 const app = Fastify({ logger: true })
 if(process.env.ENVIRONMENT === 'dev'){
+  console.log('Environment -> DEV')
   app.register(cors, {
-    origin: '*' 
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   })
 }
 

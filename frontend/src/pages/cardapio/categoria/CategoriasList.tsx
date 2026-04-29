@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react"
 import ListPage, { type ColumnDef } from "@/components/list-page/ListPage"
-import CategoriaDialog from "@/pages/cardapio/categoria/CategoriasEdit"
-import { categoriaService, type Categoria } from "@/services/categoria.service"
+import { categoriaService, type Categoria } from "@/services/categorias.service"
+import CategoriaEdit from "@/pages/cardapio/categoria/CategoriasEdit"
 
 const columnsTable: ColumnDef<Categoria>[] = [
   { accessorKey: "nome", header: "Nome" },
 ]
 
-export default function Categorias() {
+export default function CategoriasList() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isEdit, setIsEdit] = useState<string | undefined>(undefined)
   const [categorias, setCategorias] = useState<Categoria[]>([])
@@ -16,7 +16,7 @@ export default function Categorias() {
 
   useEffect(() => {
     setLoading(true)
-    categoriaService.listar()
+    categoriaService.list()
       .then((res) => setCategorias(res.data))
       .finally(() => setLoading(false))
   }, [refresh])
@@ -34,6 +34,10 @@ export default function Categorias() {
   function closeDialog() {
     setIsDialogOpen(false)
     setIsEdit(undefined)
+  }
+
+  function onSaved() {
+    closeDialog()
     setRefresh({})
   }
 
@@ -47,9 +51,10 @@ export default function Categorias() {
         onCreate={create}
         onEdit={edit}
       />
-      <CategoriaDialog
+      <CategoriaEdit
         open={isDialogOpen}
         onClose={closeDialog}
+        onSaved={onSaved}
         categoriaId={isEdit}
       />
     </>

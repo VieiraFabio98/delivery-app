@@ -18,6 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Spinner } from "../ui/spinner"
 
 export type { ColumnDef }
 
@@ -132,8 +133,10 @@ export default function ListPage<TData>({
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={columnsWithSelect.length} className="h-24 text-center text-muted-foreground">
-                  Carregando...
+                <TableCell colSpan={columnsWithSelect.length} className="h-24 text-center">
+                  <div className="flex justify-center items-center h-full gap-2">
+                    <Spinner className="size-7" />Carregando...
+                  </div>
                 </TableCell>
               </TableRow>
             ) : table.getRowModel().rows.length === 0 ? (

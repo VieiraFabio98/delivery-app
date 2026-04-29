@@ -26,7 +26,8 @@ class ProdutoRepository implements IProdutoRepository {
 
   async list(): Promise<IProduto[]> {
     try {
-      const produtos = await this.repository.find()
+      const produtos = await this.repository.find({ relations: ['categoria'] })
+      console.log(produtos)
       return produtos 
     } catch(error) {
       throw error
