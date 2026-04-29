@@ -26,9 +26,9 @@ interface ListPageProps<TData> {
   columns: ColumnDef<TData>[]
   data: TData[]
   loading?: boolean
-  onCriar?: () => void
-  onEditar?: (row: TData) => void
-  onExcluir?: (row: TData) => void
+  onCreate?: () => void
+  onEdit?: (row: TData) => void
+  onDelete?: (row: TData) => void
 }
 
 export default function ListPage<TData>({
@@ -36,9 +36,9 @@ export default function ListPage<TData>({
   columns,
   data,
   loading,
-  onCriar,
-  onEditar,
-  onExcluir,
+  onCreate,
+  onEdit,
+  onDelete,
 }: ListPageProps<TData>) {
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({})
 
@@ -87,7 +87,7 @@ export default function ListPage<TData>({
     <div className="flex flex-col gap-5">
       <h1 className="text-4xl font-semibold">{title}</h1>
       <div className="flex gap-2">
-        <Button variant="default" size="sm" onClick={onCriar}>
+        <Button variant="default" size="sm" onClick={onCreate}>
           <Plus className="w-4 h-4 mr-1" />
           Criar
         </Button>
@@ -95,7 +95,7 @@ export default function ListPage<TData>({
           variant="outline"
           size="sm"
           disabled={!singleSelected}
-          onClick={() => singleSelected && onEditar?.(singleSelected)}
+          onClick={() => singleSelected && onEdit?.(singleSelected)}
         >
           <Pencil className="w-4 h-4 mr-1" />
           Editar
@@ -104,7 +104,7 @@ export default function ListPage<TData>({
           variant="destructive"
           size="sm"
           disabled={selectedRows.length === 0}
-          onClick={() => singleSelected && onExcluir?.(singleSelected)}
+          onClick={() => singleSelected && onDelete?.(singleSelected)}
         >
           <Trash2 className="w-4 h-4 mr-1" />
           Excluir
