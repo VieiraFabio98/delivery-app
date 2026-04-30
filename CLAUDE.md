@@ -24,7 +24,6 @@ Aplicação de pedidos online onde o cliente interage com a loja pelo WhatsApp (
 - **Pagamentos**: Mercado Pago (Pix + cartão em uma única integração BR)
 - **Banco**: PostgreSQL + TypeORM
 - **Admin**: React + Vite + shadcn/ui (pasta `frontend/`, já inicializada)
-- **Storage de imagens**: AWS S3 (`@aws-sdk/client-s3` + `@fastify/multipart` no backend)
 - **Hospedagem**: a definir (Railway/Render para backend, Vercel para admin)
 
 ## Roadmap de implementação
@@ -61,20 +60,11 @@ Ordem recomendada — cada etapa destrava a próxima, não pular.
 - [ ] Mesmo fluxo de webhook para confirmação.
 
 ### [ ] Etapa 6 — Painel admin web
-- [X] React + Vite + shadcn/ui em `frontend/` inicializado e consumindo a API do backend.
-- [X] CRUD de categorias completo (listar, criar, editar, excluir com confirmação).
-- [X] CRUD de produtos completo (listar, criar, editar com select de categoria, excluir).
+- [ ] React + Vite + shadcn/ui em `frontend/` (já inicializado) consumindo a API do backend.
 - [ ] Auth simples via JWT (login com usuário/senha, sem NextAuth).
-- [ ] Lista de pedidos com atualização de status.
+- [ ] CRUD de produtos/cardápio, lista de pedidos, atualização de status.
 - [ ] Página pública `/cardapio` acessível sem login (exibe cardápio da loja com categorias e produtos ativos).
 - [ ] Bot envia link do cardápio público durante a conversa (ex: quando cliente digita "cardápio" ou no menu inicial).
-
-### [ ] Etapa 7 — Upload de imagens de produtos
-- [ ] Criar conta AWS e bucket S3 com as credenciais (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`, `S3_BUCKET_NAME`).
-- [ ] Instalar `@aws-sdk/client-s3` e `@fastify/multipart` no backend.
-- [ ] Endpoint `POST /api/upload` que recebe o arquivo e retorna a URL pública do S3.
-- [ ] Adicionar campo `imagemUrl` na entidade `Produto`.
-- [ ] Adicionar input de upload no formulário de produto no frontend.
 
 ## Pontos de atenção (vale para todas as etapas)
 
@@ -94,16 +84,6 @@ Tabela oficial: `developers.facebook.com/docs/whatsapp/pricing` (muda com frequ�
 
 ## Estado atual
 
-Etapas 1, 2 concluídas. Etapa 3 em andamento (entidades e DataSource prontos, falta fluxo de conversa). Etapa 6 em andamento: CRUD de categorias e produtos funcional no painel admin.
+Etapas 1 e 2 concluídas. Etapa 3 em andamento: entidades e DataSource prontos, falta `WhatsAppService`, `ConversationService`, handler do fluxo de conversa e seed. Próximo passo: implementar os serviços e o handler do webhook.
 
-**Frontend** (`frontend/`):
-- Painel admin com sidebar, dark mode, React Router.
-- CRUD completo de **categorias** e **produtos** (ListPage genérico com tanstack/react-table, dialogs de criação/edição, confirmação de exclusão via DeleteDialog).
-- `ListPage` reutilizável com checkbox de seleção, spinner de carregamento, botões Criar/Editar/Excluir.
-- Serviços HTTP prontos: `categorias.service.ts`, `produtos.service.ts`.
-
-**Backend** (`backend/`):
-- CRUD completo de categorias e produtos (use cases, repositórios, controllers, rotas).
-- Relacionamento `Produto → Categoria` com eager loading via `relations`.
-- CORS configurado para dev com todos os métodos HTTP.
-- Próximo passo no backend: fluxo de conversa WhatsApp + upload S3 para imagens de produtos.
+Frontend em `frontend/` já inicializado com React + Vite + shadcn/ui. Será usado para o painel admin e para uma página pública de cardápio.
