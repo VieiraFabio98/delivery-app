@@ -11,4 +11,5 @@ export const categoriaService = {
   get: (id: string) => httpClient.get<IResponse>(`/categorias/${id}`),
   create: (payload: any) => httpClient.post<IResponse>('/categorias', payload),
   update: (id: string, payload: any) => httpClient.put<IResponse>(`/categorias/${id}`, payload),
+  delete: (id: string) => httpClient.delete<void>(`/categorias/${id}`)
 }

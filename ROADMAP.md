@@ -193,16 +193,44 @@ DELETE /admin/categorias/:id
 
 ### Tarefas técnicas
 
+- [X] Configurar React Router no frontend (`frontend/`)
+- [X] CRUD de categorias (listar, criar, editar, excluir com confirmação)
+- [X] CRUD de produtos (listar, criar, editar com select de categoria, excluir)
+- [X] Componente `ListPage` genérico com tanstack/react-table (checkbox, spinner, delete dialog)
+- [X] Dark mode com `useTheme` hook + toggle na sidebar
 - [ ] Implementar endpoints `/cardapio` (público) e `/admin/*` no Fastify com JWT
 - [ ] Criar entidade `Usuario` (admin) e seed com usuário inicial
-- [ ] Configurar React Router no frontend (`frontend/`)
 - [ ] Criar página `/login` com formulário e lógica de autenticação
 - [ ] Criar página `/cardapio` (pública) com listagem de categorias e produtos
 - [ ] Criar página `/pedidos` com listagem e filtro por status
 - [ ] Criar página `/pedidos/:id` com detalhe e atualização de status
-- [ ] Criar página `/cardapio/admin` com CRUD completo
 - [ ] Adicionar envio do link do cardápio no handler do WhatsApp (etapa 3)
 - [ ] Deploy: Vercel para frontend, Railway/Render para backend
+
+---
+
+## Etapa 7 — Upload de imagens de produtos (AWS S3)
+
+### Stack
+- **Backend**: `@aws-sdk/client-s3` + `@fastify/multipart`
+- **Storage**: AWS S3 (bucket público para leitura)
+
+### Variáveis de ambiente necessárias
+```env
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_REGION=
+S3_BUCKET_NAME=
+```
+
+### Tarefas técnicas
+- [ ] Criar conta AWS + bucket S3 e obter credenciais
+- [ ] Instalar `@aws-sdk/client-s3` e `@fastify/multipart` no backend
+- [ ] Criar endpoint `POST /api/upload` que recebe arquivo e retorna URL pública do S3
+- [ ] Adicionar campo `imagemUrl: string` na entidade `Produto`
+- [ ] Adicionar input `type="file"` no formulário de produto no frontend
+- [ ] Ao selecionar imagem: fazer upload para `/api/upload` e salvar URL retornada no campo `imagemUrl`
+- [ ] Exibir preview da imagem no formulário e thumbnail na listagem de produtos
 
 ---
 
@@ -228,5 +256,11 @@ MP_WEBHOOK_SECRET=
 
 # Admin
 JWT_SECRET=
+
+# AWS S3 (imagens de produtos)
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_REGION=
+S3_BUCKET_NAME=
 FRONTEND_URL=http://localhost:5173
 ```

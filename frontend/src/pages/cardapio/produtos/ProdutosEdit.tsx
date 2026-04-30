@@ -81,8 +81,8 @@ function ProdutoForm({ produtoId, onClose, onSaved }: ProdutoFormProps) {
   }, [produtoId])
 
   async function handleSave() {
+    const payload = { nome, descricao, preco: Number(preco), categoriaId }
     try {
-      const payload = { nome, descricao, preco: Number(preco), categoriaId }
       const result = isEdicao
         ? await produtoservice.update(produtoId!, payload)
         : await produtoservice.create(payload)

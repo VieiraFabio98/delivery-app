@@ -16,6 +16,7 @@ export const produtoservice = {
   get: (id: string) => httpClient.get<IResponse>(`/produtos/${id}`),
   create: (payload: any) => httpClient.post<IResponse>('/produtos', payload),
   update: (id: string, payload: any) => httpClient.put<IResponse>(`/produtos/${id}`, payload),
+  delete: (id: string) => httpClient.delete<void>(`/produtos/${id}`)
 }
 
 

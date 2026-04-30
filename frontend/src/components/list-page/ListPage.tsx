@@ -19,6 +19,8 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Spinner } from "../ui/spinner"
+import DeleteDialog from "../DialogDelete"
+import { toast } from "sonner"
 
 export type { ColumnDef }
 
@@ -42,6 +44,7 @@ export default function ListPage<TData>({
   onDelete,
 }: ListPageProps<TData>) {
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({})
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
 
   const columnsWithSelect: ColumnDef<TData>[] = [
     {
@@ -104,8 +107,8 @@ export default function ListPage<TData>({
         <Button
           variant="destructive"
           size="sm"
-          disabled={selectedRows.length === 0}
-          onClick={() => singleSelected && onDelete?.(singleSelected)}
+          disabled={!singleSelected}
+          onClick={() => setDeleteDialogOpen(true)}
         >
           <Trash2 className="w-4 h-4 mr-1" />
           Excluir
@@ -164,6 +167,15 @@ export default function ListPage<TData>({
           {selectedRows.length} registro(s) selecionado(s).
         </p>
       )}
+      <DeleteDialog
+        open={deleteDialogOpen}
+        onCancel={() => setDeleteDialogOpen(false)}
+        onConfirm={() => {
+          singleSelected && onDelete?.(singleSelected)
+          toast.success("Registro deletado com sucesso!")
+          setDeleteDialogOpen(false)
+        }}
+      />
     </div>
   )
 }

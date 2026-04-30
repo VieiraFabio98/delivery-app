@@ -58,10 +58,11 @@ function CategoriaForm({ categoriaId, onClose, onSaved }: CategoriaFormProps) {
   }, [categoriaId])
 
   async function handleSalvar() {
+    const payload = { nome }
     try {
       const result = isEdicao
-        ? await categoriaService.update(categoriaId!, nome)
-        : await categoriaService.create(nome)
+        ? await categoriaService.update(categoriaId!, payload)
+        : await categoriaService.create(payload)
 
       if (result.statusCode === 200 || result.statusCode === 201) {
         toast.success(isEdicao ? "Categoria atualizada com sucesso!" : "Categoria cadastrada com sucesso!")

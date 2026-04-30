@@ -60,6 +60,7 @@ export default function ProdutosList() {
         loading={loading}
         onCreate={create}
         onEdit={edit}
+        onDelete={(produto) => produtoservice.delete(produto.id).then(() => setRefresh({}))}
       />
       <ProdutosEdit
         open={isDialogOpen}

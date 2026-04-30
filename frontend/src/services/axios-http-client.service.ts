@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosError } from 'axios'
+import axios, { AxiosInstance } from 'axios'
 
 export interface HttpClient {
   get<T>(url: string, params?: Record<string, unknown>): Promise<T>

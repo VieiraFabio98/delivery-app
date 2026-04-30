@@ -50,6 +50,7 @@ export default function CategoriasList() {
         loading={loading}
         onCreate={create}
         onEdit={edit}
+        onDelete={(categoria) => categoriaService.delete(categoria.id).then(() => setRefresh({}))}
       />
       <CategoriaEdit
         open={isDialogOpen}
@@ -60,3 +61,4 @@ export default function CategoriasList() {
     </>
   )
 }
+
