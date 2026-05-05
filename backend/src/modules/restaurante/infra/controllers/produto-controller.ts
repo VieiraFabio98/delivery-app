@@ -4,6 +4,7 @@ import { DeleteProdutoUseCase } from "@modules/restaurante/application/use-cases
 import { GetProdutoUseCase } from "@modules/restaurante/application/use-cases/produto/get-produto-use-case"
 import { ListProdutosUseCase } from "@modules/restaurante/application/use-cases/produto/list-produto-use-case"
 import { UpdateProdutoUseCase } from "@modules/restaurante/application/use-cases/produto/update-produto-use-case"
+import { UploadPhotoUseCase } from "@modules/restaurante/application/use-cases/produto/upload-photo-use-case"
 import { FastifyRequest, FastifyReply } from "fastify"
 import { container } from "tsyringe"
 
@@ -50,6 +51,17 @@ export async function remove(request: FastifyRequest<{ Params: { id: string } }>
 
   const deleteUseCase = container.resolve(DeleteProdutoUseCase)
   const result = await deleteUseCase.execute(id)
+
+  return reply.status(result.statusCode).send(result)
+}
+
+export async function upload(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
+  const { id } = request.params
+  const data = await request.file()
+  const buffer = await data?.toBuffer()!
+
+  const uploadPhoto = container.resolve(UploadPhotoUseCase)
+  const result = await uploadPhoto.execute(id, buffer)
 
   return reply.status(result.statusCode).send(result)
 }

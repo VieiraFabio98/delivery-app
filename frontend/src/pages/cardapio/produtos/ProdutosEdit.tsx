@@ -56,6 +56,7 @@ function ProdutoForm({ produtoId, onClose, onSaved }: ProdutoFormProps) {
   const [categoriaId, setCategoriaId] = useState("")
   const [categorias, setCategorias] = useState<Categoria[]>([])
   const [isLoading, setIsLoading] = useState(isEdicao)
+  const [isUploading, setIsUploading] = useState(false)
 
   useEffect(() => {
     if (!produtoId) {
@@ -79,6 +80,20 @@ function ProdutoForm({ produtoId, onClose, onSaved }: ProdutoFormProps) {
       .catch(() => toast.error("Erro ao carregar produto"))
       .finally(() => setIsLoading(false))
   }, [produtoId])
+
+  async function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file || !produtoId) return
+    setIsUploading(true)
+    try {
+      await produtoservice.uploadImage(produtoId, file)
+      toast.success("Foto atualizada com sucesso!")
+    } catch {
+      toast.error("Erro ao fazer upload da foto")
+    } finally {
+      setIsUploading(false)
+    }
+  }
 
   async function handleSave() {
     const payload = { nome, descricao, preco: Number(preco), categoriaId }
@@ -146,6 +161,17 @@ function ProdutoForm({ produtoId, onClose, onSaved }: ProdutoFormProps) {
             onChange={(e) => setPreco(e.target.value)}
           />
         </Field>
+        {isEdicao && (
+          <Field className="col-span-2">
+            <FieldLabel>Foto do produto</FieldLabel>
+            <Input
+              type="file"
+              accept="image/*"
+              disabled={isUploading}
+              onChange={handleImageChange}
+            />
+          </Field>
+        )}
         <DialogFooter className="col-span-2">
           <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
           <Button type="submit" disabled={!canSave}>Salvar</Button>

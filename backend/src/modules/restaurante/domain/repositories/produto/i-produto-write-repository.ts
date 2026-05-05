@@ -6,5 +6,6 @@ import { IProduto } from "../../entities/i-produto"
 export interface IProdutoWriteRepository {
   create(data: ICreateProdutoDTO): Promise<IProduto>
   update(id: string, data: IUpdateProdutoDTO): Promise<IProduto>
+  updateImageUrl(id: string, imageUrl: string): Promise<void>
   delete(id: string): Promise<void>
 }

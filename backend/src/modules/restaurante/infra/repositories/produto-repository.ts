@@ -59,6 +59,10 @@ class ProdutoRepository implements IProdutoRepository {
     }
   }
 
+  async updateImageUrl(id: string, imageUrl: string): Promise<void> {
+    await this.repository.update(id, { imageUrl })
+  }
+
   async delete(id: string): Promise<void> {
     try {
       await this.repository.delete(id)

@@ -8,6 +8,7 @@ import '@shared/container'
 import { simulatorRoutes } from '@app/http/routes/simulator'
 import cors from '@fastify/cors'
 import { scheduleConversationCleanup } from 'jobs/clen-up-conversation.job'
+import multipart  from '@fastify/multipart'
 
 
 const app = Fastify({ logger: true })
@@ -19,6 +20,7 @@ if(process.env.ENVIRONMENT === 'dev'){
   })
 }
 
+app.register(multipart)
 app.register(webhookRoutes, { prefix: '/webhook' })
 app.register(simulatorRoutes, { prefix: '/simulator' })
 app.register(apiRoutes, { prefix: '/api' })

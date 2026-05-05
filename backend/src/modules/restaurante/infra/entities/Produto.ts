@@ -19,6 +19,9 @@ export class Produto {
   @Column({ default: true })
   ativo: boolean
 
+  @Column({ name: 'image_url', type: 'varchar', nullable: true })
+  imageUrl: string | null
+
   @Column({ name: 'categoria_id' })
   categoriaId: string
 
