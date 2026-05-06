@@ -22,7 +22,7 @@ export default function Cardapio() {
 
   useEffect(() => {
     produtoservice.list()
-      .then((res: any) => setProdutos(res.data))
+      .then((res: any) => {setProdutos(res.data); console.log(produtos)})
       .catch(() => toast.error("Erro ao carregar produtos"))
   }, [refresh])
 
@@ -32,14 +32,17 @@ export default function Cardapio() {
     )
   }
 
-  function handleImage(id: string, e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleImage(id: string, e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
-    if(!file) {
-      toast.error('Erro ao carregar foto, tente novamente.')
-      return
+    if (!file) return
+    try {
+      console.log('aqui')
+      await produtoservice.uploadImage(id, file)
+      toast.success("Foto atualizada com sucesso!")
+      setRefresh({})
+    } catch {
+      toast.error("Erro ao fazer upload da foto")
     }
-    console.log(file)
-    
   }
 
   return (
@@ -61,20 +64,24 @@ export default function Cardapio() {
                 alt={produto.nome}
                 className="aspect-video w-full object-cover"
               />
-              <label
-                className="absolute bottom-2 left-2 cursor-pointer rounded-full inline-flex"
+              <input
+                id={`foto-${produto.id}`}
+                type="file"
+                accept="image/*"
+                className="hidden"
                 onClick={(e) => e.stopPropagation()}
+                onChange={(e) => handleImage(produto.id, e)}
+              />
+              <Button
+                size="icon"
+                className="absolute bottom-2 left-2 hover:scale-130 transition-transform duration-200 h-7 w-7"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  document.getElementById(`foto-${produto.id}`)?.click()
+                }}
               >
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={(e) => handleImage(produto.id, e)}
-                />
-                <Button size="icon" className=" hover:scale-130 transition-transform duration-200 h-7 w-7" asChild>
-                  <span><Camera/></span>
-                </Button>
-              </label>
+                <Camera />
+              </Button>
               <Badge
                 className={
                   "absolute bottom-2 right-2 z-20 text-white " +
