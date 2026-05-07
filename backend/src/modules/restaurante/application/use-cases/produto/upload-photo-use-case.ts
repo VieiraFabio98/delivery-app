@@ -13,13 +13,13 @@ class UploadPhotoUseCase {
 
   async execute(id: string, buffer: Buffer): Promise<HttpResponse> {
     try {
-      const Produto = await this.produtoRepository.get(id)
+      const produto = await this.produtoRepository.get(id)
       
-      if (!Produto) {
+      if (!produto) {
         return notFound('Produto not found')
       }
 
-      const image = await upload(buffer, 'teste')
+      const image = await upload(buffer, produto.nome)
     
       await this.produtoRepository.updateImageUrl(id, image)
 

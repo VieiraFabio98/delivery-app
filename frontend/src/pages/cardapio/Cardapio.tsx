@@ -1,5 +1,5 @@
 import { produtoservice } from "@/services/produtos.service"
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -19,24 +19,39 @@ export default function Cardapio() {
   const [produtos, setProdutos] = useState<any[]>([])
   const [editId, setEditId] = useState<string | undefined>(undefined)
   const [refresh, setRefresh] = useState({})
+  const debounceTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({})
 
   useEffect(() => {
     produtoservice.list()
-      .then((res: any) => {setProdutos(res.data); console.log(produtos)})
+      .then((res: any) => setProdutos(res.data))
       .catch(() => toast.error("Erro ao carregar produtos"))
   }, [refresh])
 
   const toggleAtivo = (id: string) => {
+    let nextValue = false
     setProdutos((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, ativo: !p.ativo } : p))
+      prev.map((p) => {
+        if (p.id !== id) return p
+        nextValue = !p.isActive
+        return { ...p, isActive: nextValue }
+      })
     )
+
+    clearTimeout(debounceTimers.current[id])
+    debounceTimers.current[id] = setTimeout(async () => {
+      try {
+        await produtoservice.update(id, { isActive: nextValue })
+      } catch {
+        toast.error("Erro ao atualizar status do produto")
+        setRefresh({})
+      }
+    }, 2000)
   }
 
   async function handleImage(id: string, e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
     try {
-      console.log('aqui')
       await produtoservice.uploadImage(id, file)
       toast.success("Foto atualizada com sucesso!")
       setRefresh({})
@@ -55,12 +70,12 @@ export default function Cardapio() {
             className="relative w-full max-w-xs pt-0 overflow-hidden cursor-pointer select-none hover:scale-105 transition-transform duration-200"
             onClick={() => toggleAtivo(produto.id)}
           >
-            {!produto.ativo && (
+            {!produto.isActive && (
               <div className="absolute inset-0 bg-black/60 z-10 rounded-xl" />
             )}
             <div className="relative">
               <img
-                src={coxinha}
+                src={produto.imageUrl}
                 alt={produto.nome}
                 className="aspect-video w-full object-cover"
               />
@@ -85,12 +100,12 @@ export default function Cardapio() {
               <Badge
                 className={
                   "absolute bottom-2 right-2 z-20 text-white " +
-                  (produto.ativo
+                  (produto.isActive
                     ? "bg-green-600 hover:bg-green-600"
                     : "bg-red-600 hover:bg-red-600")
                 }
               >
-                {produto.ativo ? "Ativo" : "Inativo"}
+                {produto.isActive ? "Ativo" : "Inativo"}
               </Badge>
             </div>
             <CardHeader>

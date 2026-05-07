@@ -16,8 +16,8 @@ export class Produto {
   @Column('decimal', { precision: 10, scale: 2 })
   preco: number
 
-  @Column({ default: true })
-  ativo: boolean
+  @Column({ name: 'is_active', default: true })
+  isActive: boolean
 
   @Column({ name: 'image_url', type: 'varchar', nullable: true })
   imageUrl: string | null

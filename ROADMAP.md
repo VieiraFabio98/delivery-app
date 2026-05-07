@@ -80,9 +80,9 @@ Função auxiliar a criar: `sendWhatsAppMessage(to: string, body: object)` que c
 - [X] Configurar `DataSource` do TypeORM (conexão com Postgres)
 - [X] Criar entidades com decorators do TypeORM (`Cliente`, `Categoria`, `Produto`, `Pedido`, `ItemPedido`, `ConversationState`)
 - [?] Registrar plugin TypeORM no Fastify
-- [X] Criar serviço `WhatsAppService` com método `sendMessage`
-- [ ] Criar serviço `ConversationService` que lê/salva estado por `phone`
-- [ ] Implementar handler de mensagens no webhook POST
+- [X] Criar serviço `WhatsAppService` com métodos `sendText()`, `sendButtons()`, `sendList()`
+- [X] Criar serviço `ConversationStateService` com `getState()` e `setStep()`
+- [ ] Implementar handler de mensagens no webhook POST (fluxo completo: categorias → produtos → carrinho → confirmar)
 - [ ] Seed inicial de categorias e produtos para teste
 - [ ] Testar fluxo completo: oi → cardápio → produto → carrinho → confirmar
 
@@ -193,15 +193,22 @@ DELETE /admin/categorias/:id
 
 ### Tarefas técnicas
 
-- [ ] Implementar endpoints `/cardapio` (público) e `/admin/*` no Fastify com JWT
+- [X] React Router configurado no frontend com layout + sidebar
+- [X] Página `/cardapio` (admin) com cards visuais, toggle ativo/inativo com debounce, upload de foto
+- [X] CRUD completo de produtos com upload de imagem para S3 (`POST /produtos/image/:id`)
+- [X] CRUD completo de categorias
+- [X] Entidade `Produto` com campo `isActive` (coluna `is_active`)
 - [ ] Criar entidade `Usuario` (admin) e seed com usuário inicial
-- [ ] Configurar React Router no frontend (`frontend/`)
-- [ ] Criar página `/login` com formulário e lógica de autenticação
-- [ ] Criar página `/cardapio` (pública) com listagem de categorias e produtos
+- [ ] Implementar `POST /admin/login` com JWT
+- [ ] Middleware de verificação JWT nas rotas admin do Fastify
+- [ ] Lógica de autenticação na página `/login` do frontend (form existe, falta chamada à API)
+- [ ] Proteger rotas admin no React Router (redirect para `/login` se sem token)
+- [ ] Implementar `GET /admin/pedidos`, `GET /admin/pedidos/:id`, `PATCH /admin/pedidos/:id/status`
 - [ ] Criar página `/pedidos` com listagem e filtro por status
 - [ ] Criar página `/pedidos/:id` com detalhe e atualização de status
-- [ ] Criar página `/cardapio/admin` com CRUD completo
-- [ ] Adicionar envio do link do cardápio no handler do WhatsApp (etapa 3)
+- [ ] Implementar `GET /cardapio` (público) retornando categorias + produtos ativos
+- [ ] Criar página pública `/cardapio` acessível sem login
+- [ ] Adicionar envio do link do cardápio no handler do WhatsApp
 - [ ] Deploy: Vercel para frontend, Railway/Render para backend
 
 ---

@@ -18,12 +18,14 @@ export async function upload(buffer: Buffer, filename: string): Promise<string> 
       Bucket: bucket,
       Key: filename,
       Body: buffer,
-      ContentType: 'image/jpeg'
+      ContentType: 'image/jpeg',
+      
     }))
 
     return `https://${bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${filename}`
 
   } catch(error) {
+    console.log('Error upload photo \n', error)
     throw serverError(error as Error)
   }
 }

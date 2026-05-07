@@ -11,4 +11,5 @@ export interface IUpdateProdutoDTO {
   nome: string
   descricao: string
   preco: number
+  isActive?: boolean
 }
