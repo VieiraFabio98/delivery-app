@@ -1,3 +1,5 @@
+import { IUserRepository } from "@modules/auth/domain/repositories/i-user-repository"
+import { UserRepository } from "@modules/auth/infra/repositories/user-repository"
 import { ICategoriaRepository } from "@modules/restaurante/domain/repositories/categoria/i-categoria-repository"
 import { IClienteRepository } from "@modules/restaurante/domain/repositories/cliente/i-cliente-repository"
 import { IProdutoRepository } from "@modules/restaurante/domain/repositories/produto/i-produto-repository"
@@ -9,6 +11,7 @@ import { WhatsAppService } from "@services/whats-app.service"
 import { container } from "tsyringe"
 
 
+container.registerSingleton<IUserRepository>('UserRepository', UserRepository)
 container.registerSingleton<ICategoriaRepository>('CategoriaRepository', CategoriaRepository)
 container.registerSingleton<IClienteRepository>('ClienteRepository', ClienteRepository)
 container.registerSingleton<IProdutoRepository>('ProdutoRepository', ProdutoRepository)
