@@ -21,7 +21,7 @@ class CreateUserUseCase {
         password: passwordHash,
       })
 
-      return created({ id: user.id, name: user.name, email: user.email })
+      return created(user)
     } catch (error) {
       return serverError(error as Error)
     }
