@@ -10,10 +10,10 @@ export class Pedido {
   id: string
 
   @Column()
-  clientId: string
+  clienteId: string
 
   @ManyToOne(() => Cliente, cliente => cliente.pedidos)
-  @JoinColumn({ name: 'clientId' })
+  @JoinColumn({ name: 'clienteId' })
   cliente: Cliente
 
   @Column({ default: 'aguardando_pagamento' })

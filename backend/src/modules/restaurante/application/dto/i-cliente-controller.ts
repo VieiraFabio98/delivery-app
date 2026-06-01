@@ -1,5 +1,5 @@
 export interface ICreateClienteDTO {
-  nome: string
+  nome?: string
   telefone: string
 }
 

@@ -39,6 +39,7 @@ export default function CartShopDialog({ open, onClose, itens, total, phone, onP
   const [step, setStep] = useState<Step>("carrinho")
   const [loading, setLoading] = useState(false)
   const [pix, setPix] = useState<PixData | null>(null)
+  const [formaPagamento, setFormaPagamento] = useState<"pix" | "cartao">("pix")
 
   function handleClose() {
     setStep("carrinho")
@@ -52,6 +53,7 @@ export default function CartShopDialog({ open, onClose, itens, total, phone, onP
       const res = await pedidoservice.create({
         telefone,
         itens: itens.map(i => ({ produtoId: i.produto.id, quantidade: i.quantidade })),
+        formaPagamento,
       })
       setPix(res.data as PixData)
       setStep("pix")
@@ -103,6 +105,25 @@ export default function CartShopDialog({ open, onClose, itens, total, phone, onP
               <div className="border-t pt-2 flex justify-between font-semibold">
                 <span>Total</span>
                 <span>R$ {total.toFixed(2)}</span>
+              </div>
+              <div className="border-t pt-3 flex flex-col gap-2">
+                <Label>Forma de pagamento</Label>
+                <div className="flex gap-2">
+                  {(["pix", "cartao"] as const).map((op) => (
+                    <button
+                      key={op}
+                      type="button"
+                      onClick={() => setFormaPagamento(op)}
+                      className={`flex-1 rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
+                        formaPagamento === op
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-input bg-background hover:bg-accent"
+                      }`}
+                    >
+                      {op === "pix" ? "Pix" : "Cartão de crédito"}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
             <DialogFooter>

@@ -4,10 +4,10 @@ import { FastifyRequest, FastifyReply } from "fastify"
 import { container } from "tsyringe"
 
 export async function create(request: FastifyRequest<{ Body: ICreatePedidoDTO }>, reply: FastifyReply) {
-  const { clientId, formaPagamento, itens } = request.body
+  const { telefone, formaPagamento, itens } = request.body
 
   const createUseCase = container.resolve(CreatePedidoUseCase)
-  const result = await createUseCase.execute({ clientId, formaPagamento, itens })
+  const result = await createUseCase.execute({ telefone, formaPagamento, itens })
 
   return reply.status(result.statusCode).send(result)
 }

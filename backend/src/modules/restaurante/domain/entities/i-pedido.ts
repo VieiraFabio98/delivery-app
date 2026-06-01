@@ -1,6 +1,6 @@
 export interface IPedido {
   id: string,
-  clientId: string,
+  clienteId: string,
   itens: {
     produtoId: string,
     quantidade: number

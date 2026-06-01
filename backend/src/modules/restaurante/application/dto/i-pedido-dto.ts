@@ -1,8 +1,11 @@
 export interface ICreatePedidoDTO {
-  clientId: string,
+  clienteId?: string,
+  telefone?: string,
   itens: {
-    produtoId: string,
+    produtoId: string
     quantidade: number
-  }[]
+    precoUnitario?: number
+  }[],
   formaPagamento: 'pix' | 'cartao'
+  total?: number
 }

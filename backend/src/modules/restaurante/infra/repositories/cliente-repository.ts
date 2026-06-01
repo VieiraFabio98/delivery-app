@@ -14,6 +14,9 @@ class ClienteRepository implements IClienteRepository {
   constructor() {
     this.repository = appDataSource.getRepository(Cliente)
   }
+  async getByPhone(phone: string): Promise<ICliente | null> {
+    return this.repository.findOne({ where: { telefone: phone } })
+  }
 
   async get(id: string): Promise<ICliente | null> {
     try {
