@@ -27,7 +27,14 @@ interface CartShopProps {
   onPhoneChange: (v: string) => void
 }
 
-type Step = "carrinho" | "telefone" | "pix"
+type Step = "carrinho" | "telefone" | "endereco" | "pix"
+
+interface Endereco {
+  rua: string
+  numero: string
+  complemento: string
+  cep: string
+}
 
 interface PixData {
   pedidoId: string
@@ -40,6 +47,7 @@ export default function CartShopDialog({ open, onClose, itens, total, phone, onP
   const [loading, setLoading] = useState(false)
   const [pix, setPix] = useState<PixData | null>(null)
   const [formaPagamento, setFormaPagamento] = useState<"pix" | "cartao">("pix")
+  const [endereco, setEndereco] = useState<Endereco>({ rua: "", numero: "", complemento: "", cep: "" })
 
   function handleClose() {
     setStep("carrinho")
@@ -77,12 +85,21 @@ export default function CartShopDialog({ open, onClose, itens, total, phone, onP
       toast.error("Informe seu número de WhatsApp")
       return
     }
+    setStep("endereco")
+  }
+
+  function handleConfirmarEndereco() {
+    if (!endereco.rua.trim() || !endereco.numero.trim() || !endereco.cep.trim()) {
+      toast.error("Preencha rua, número e CEP")
+      return
+    }
     criarPedido(phone.trim())
   }
 
   const titles: Record<Step, string> = {
     carrinho: "Seu carrinho",
     telefone: "Seu WhatsApp",
+    endereco: "Endereço de entrega",
     pix: "Pague com Pix",
   }
 
@@ -155,6 +172,35 @@ export default function CartShopDialog({ open, onClose, itens, total, phone, onP
           </>
         )}
 
+        {step === "endereco" && (
+          <>
+            <div className="flex flex-col gap-3 py-2">
+              <div className="flex gap-2">
+                <div className="flex flex-col gap-1.5 flex-1">
+                  <Label htmlFor="cep">CEP</Label>
+                  <Input id="cep" placeholder="00000-000" value={endereco.cep} onChange={e => setEndereco(p => ({ ...p, cep: e.target.value.replace(/\D/g, "") }))} maxLength={8} />
+                </div>
+                <div className="flex flex-col gap-1.5 w-24">
+                  <Label htmlFor="numero">Número</Label>
+                  <Input id="numero" placeholder="123" value={endereco.numero} onChange={e => setEndereco(p => ({ ...p, numero: e.target.value }))} />
+                </div>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="rua">Rua</Label>
+                <Input id="rua" placeholder="Nome da rua" value={endereco.rua} onChange={e => setEndereco(p => ({ ...p, rua: e.target.value }))} />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="complemento">Complemento</Label>
+                <Input id="complemento" placeholder="Apto, bloco... (opcional)" value={endereco.complemento} onChange={e => setEndereco(p => ({ ...p, complemento: e.target.value }))} />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setStep("telefone")}>Voltar</Button>
+              <Button onClick={handleConfirmarEndereco} disabled={loading}>Continuar</Button>
+            </DialogFooter>
+          </>
+        )}
+
         {step === "pix" && pix && (
           <>
             <div className="flex flex-col items-center gap-4 py-2">
@@ -170,8 +216,17 @@ export default function CartShopDialog({ open, onClose, itens, total, phone, onP
                   <Button
                     variant="outline"
                     onClick={() => {
-                      navigator.clipboard.writeText(pix.qrCode)
-                      toast.success("Código copiado!")
+                      if (navigator.clipboard) {
+                        navigator.clipboard.writeText(pix.qrCode).then(() => toast.success("Código copiado!"))
+                      } else {
+                        const el = document.createElement("textarea")
+                        el.value = pix.qrCode
+                        document.body.appendChild(el)
+                        el.select()
+                        document.execCommand("copy")
+                        document.body.removeChild(el)
+                        toast.success("Código copiado!")
+                      }
                     }}
                   >
                     Copiar

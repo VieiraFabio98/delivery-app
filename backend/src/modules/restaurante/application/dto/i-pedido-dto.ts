@@ -8,4 +8,5 @@ export interface ICreatePedidoDTO {
   }[],
   formaPagamento: 'pix' | 'cartao'
   total?: number
+  mpPaymentId?: string
 }

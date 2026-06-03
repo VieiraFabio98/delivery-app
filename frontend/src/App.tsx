@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Toaster } from "@/components/ui/sonner";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Pedidos from "./pages/pedidos/Pedidos";
@@ -12,6 +13,7 @@ import Menu from "./pages/menu/Menu";
 export function App() {
   return (
     <BrowserRouter>
+      <Toaster position="top-center" />
       <Routes>
         <Route path="/menu" element={<Menu />} />
         <Route path="/login" element={<Login />} />

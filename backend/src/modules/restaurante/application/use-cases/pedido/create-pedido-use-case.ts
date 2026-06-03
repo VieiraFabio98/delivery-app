@@ -4,6 +4,7 @@ import { IPedidoRepository } from "@modules/restaurante/domain/repositories/pedi
 import { ICreatePedidoDTO } from "../../dto/i-pedido-dto"
 import { IClienteRepository } from "@modules/restaurante/domain/repositories/cliente/i-cliente-repository"
 import { IProdutoRepository } from "@modules/restaurante/domain/repositories/produto/i-produto-repository"
+import { criarCobrancaPix } from "@services/mercado-pago.service"
 
 
 @injectable()
@@ -37,16 +38,24 @@ class CreatePedidoUseCase {
 
       const total = itensComPreco.reduce((acc, i) => acc + i.precoUnitario * i.quantidade, 0)
 
+      const pix = await criarCobrancaPix({
+        pedidoId: crypto.randomUUID(),
+        total,
+        telefone: data.telefone!,
+      })
+
       const pedido = await this.pedidoRepository.create({
         clienteId: cliente.id,
         itens: itensComPreco,
         formaPagamento: data.formaPagamento,
         total,
+        mpPaymentId: pix.mpPaymentId,
       })
 
-      return created(pedido)
+      return created({ pedidoId: pedido.id, qrCode: pix.qrCode, qrCodeBase64: pix.qrCodeBase64 })
 
     } catch(error) {
+      console.log(error)
       return serverError(error as Error)
     }
   }
