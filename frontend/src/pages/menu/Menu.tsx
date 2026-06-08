@@ -8,7 +8,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Minus, Plus, ShoppingCart } from "lucide-react"
 import { toast } from "sonner"
 import * as React from "react"
-import CartShopDialog from "@/components/CartShop"
+import CartShopDialog from "@/components/cart-shop/CartShop"
 
 interface CartItem {
   produto: Produto

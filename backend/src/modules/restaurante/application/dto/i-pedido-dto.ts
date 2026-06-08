@@ -9,4 +9,13 @@ export interface ICreatePedidoDTO {
   formaPagamento: 'pix' | 'cartao'
   total?: number
   mpPaymentId?: string
+  enderecoId?: string
+  endereco?: {
+    cep: string
+    rua: string
+    bairro?: string
+    cidade?: string
+    numero: string
+    complemento?: string
+  }
 }

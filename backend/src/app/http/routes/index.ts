@@ -4,6 +4,7 @@ import { clienteRoutes } from './application-routes/cliente.routes'
 import { produtoRoutes } from './application-routes/produto.routes'
 import { userRoutes } from './application-routes/user.routes'
 import { pedidoRoutes } from './application-routes/pedido.routes'
+import { enderecoRoutes } from './application-routes/endereco.routes'
 
 
 export async function apiRoutes(app: FastifyInstance) {
@@ -11,5 +12,6 @@ export async function apiRoutes(app: FastifyInstance) {
   app.register(clienteRoutes, { prefix: '/clientes' })
   app.register(produtoRoutes, { prefix: '/produtos' })
   app.register(pedidoRoutes, { prefix: '/pedidos' })
+  app.register(enderecoRoutes, { prefix: '/enderecos' })
   app.register(userRoutes, { prefix: '/users' })
 }

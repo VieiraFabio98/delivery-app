@@ -6,11 +6,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Button } from "./ui/button"
-import { Input } from "./ui/input"
-import { Label } from "./ui/label"
+import { Button } from "../ui/button"
+import { Input } from "../ui/input"
+import { Label } from "../ui/label"
 import { Produto } from "@/services/produtos.service"
 import { pedidoservice } from "@/services/pedido.service"
+import { enderecoservice } from "@/services/endereco.service"
+import FullScreenLoader from "../FullScreenLoader"
 import { toast } from "sonner"
 
 interface CartItem {
@@ -31,6 +33,8 @@ type Step = "carrinho" | "telefone" | "endereco" | "pix"
 
 interface Endereco {
   rua: string
+  bairro: string
+  cidade: string
   numero: string
   complemento: string
   cep: string
@@ -47,7 +51,7 @@ export default function CartShopDialog({ open, onClose, itens, total, phone, onP
   const [loading, setLoading] = useState(false)
   const [pix, setPix] = useState<PixData | null>(null)
   const [formaPagamento, setFormaPagamento] = useState<"pix" | "cartao">("pix")
-  const [endereco, setEndereco] = useState<Endereco>({ rua: "", numero: "", complemento: "", cep: "" })
+  const [endereco, setEndereco] = useState<Endereco>({ rua: "", bairro: "", cidade: "", numero: "", complemento: "", cep: "" })
 
   function handleClose() {
     setStep("carrinho")
@@ -55,13 +59,21 @@ export default function CartShopDialog({ open, onClose, itens, total, phone, onP
     onClose()
   }
 
-  async function criarPedido(telefone: string) {
+  async function createOrder(telefone: string) {
     setLoading(true)
     try {
       const res = await pedidoservice.create({
         telefone,
         itens: itens.map(i => ({ produtoId: i.produto.id, quantidade: i.quantidade })),
         formaPagamento,
+        endereco: {
+          cep: endereco.cep,
+          rua: endereco.rua,
+          bairro: endereco.bairro,
+          cidade: endereco.cidade,
+          numero: endereco.numero,
+          complemento: endereco.complemento,
+        },
       })
       setPix(res.data as PixData)
       setStep("pix")
@@ -72,11 +84,49 @@ export default function CartShopDialog({ open, onClose, itens, total, phone, onP
     }
   }
 
+  async function goToAddress(telefone: string) {
+    setLoading(true)
+    try {
+      const res = await enderecoservice.listByPhone(telefone)
+      const enderecos = (res.data ?? []) as Endereco[]
+      if (enderecos.length > 0) {
+        const e = enderecos[0]
+        setEndereco({ rua: e.rua, bairro: e.bairro ?? "", cidade: e.cidade ?? "", numero: e.numero, complemento: e.complemento ?? "", cep: e.cep })
+      }
+    } catch {
+      // sem endereço salvo: segue com formulário vazio
+    } finally {
+      setLoading(false)
+      setStep("endereco")
+    }
+  }
+
+  async function buscarCep(cep: string) {
+    const limpo = cep.replace(/\D/g, "")
+    if (limpo.length !== 8) return
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${limpo}/json/`)
+      const data = await res.json()
+      if (data.erro) {
+        toast.error("CEP não encontrado")
+        return
+      }
+      setEndereco(p => ({
+        ...p,
+        rua: data.logradouro ?? p.rua,
+        bairro: data.bairro ?? p.bairro,
+        cidade: data.localidade ?? p.cidade,
+      }))
+    } catch {
+      toast.error("Erro ao buscar CEP")
+    }
+  }
+
   function handleConfirmarCarrinho() {
     if (!phone) {
       setStep("telefone")
     } else {
-      criarPedido(phone)
+      goToAddress(phone)
     }
   }
 
@@ -85,7 +135,7 @@ export default function CartShopDialog({ open, onClose, itens, total, phone, onP
       toast.error("Informe seu número de WhatsApp")
       return
     }
-    setStep("endereco")
+    goToAddress(phone.trim())
   }
 
   function handleConfirmarEndereco() {
@@ -93,7 +143,7 @@ export default function CartShopDialog({ open, onClose, itens, total, phone, onP
       toast.error("Preencha rua, número e CEP")
       return
     }
-    criarPedido(phone.trim())
+    createOrder(phone.trim())
   }
 
   const titles: Record<Step, string> = {
@@ -105,6 +155,7 @@ export default function CartShopDialog({ open, onClose, itens, total, phone, onP
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
+      {loading && <FullScreenLoader />}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{titles[step]}</DialogTitle>
@@ -178,7 +229,7 @@ export default function CartShopDialog({ open, onClose, itens, total, phone, onP
               <div className="flex gap-2">
                 <div className="flex flex-col gap-1.5 flex-1">
                   <Label htmlFor="cep">CEP</Label>
-                  <Input id="cep" placeholder="00000-000" value={endereco.cep} onChange={e => setEndereco(p => ({ ...p, cep: e.target.value.replace(/\D/g, "") }))} maxLength={8} />
+                  <Input id="cep" placeholder="00000-000" value={endereco.cep} onChange={e => setEndereco(p => ({ ...p, cep: e.target.value.replace(/\D/g, "") }))} onBlur={e => buscarCep(e.target.value)} maxLength={8} />
                 </div>
                 <div className="flex flex-col gap-1.5 w-24">
                   <Label htmlFor="numero">Número</Label>
@@ -188,6 +239,16 @@ export default function CartShopDialog({ open, onClose, itens, total, phone, onP
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="rua">Rua</Label>
                 <Input id="rua" placeholder="Nome da rua" value={endereco.rua} onChange={e => setEndereco(p => ({ ...p, rua: e.target.value }))} />
+              </div>
+              <div className="flex gap-2">
+                <div className="flex flex-col gap-1.5 flex-1">
+                  <Label htmlFor="bairro">Bairro</Label>
+                  <Input id="bairro" placeholder="Bairro" value={endereco.bairro} onChange={e => setEndereco(p => ({ ...p, bairro: e.target.value }))} />
+                </div>
+                <div className="flex flex-col gap-1.5 flex-1">
+                  <Label htmlFor="cidade">Cidade</Label>
+                  <Input id="cidade" placeholder="Cidade" value={endereco.cidade} onChange={e => setEndereco(p => ({ ...p, cidade: e.target.value }))} />
+                </div>
               </div>
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="complemento">Complemento</Label>

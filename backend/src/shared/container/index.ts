@@ -2,6 +2,8 @@ import { IUserRepository } from "@modules/auth/domain/repositories/i-user-reposi
 import { UserRepository } from "@modules/auth/infra/repositories/user-repository"
 import { ICategoriaRepository } from "@modules/restaurante/domain/repositories/categoria/i-categoria-repository"
 import { IClienteRepository } from "@modules/restaurante/domain/repositories/cliente/i-cliente-repository"
+import { IEnderecoRepository } from "@modules/clientes/domain/repositories/endereco/i-endereco-repository"
+import { EnderecoRepository } from "@modules/clientes/infra/repositories/endereco-repository"
 import { IPedidoRepository } from "@modules/restaurante/domain/repositories/pedido/i-pedido-repository"
 import { IProdutoRepository } from "@modules/restaurante/domain/repositories/produto/i-produto-repository"
 import { CategoriaRepository } from "@modules/restaurante/infra/repositories/categoria-repository"
@@ -18,6 +20,7 @@ container.registerSingleton<ICategoriaRepository>('CategoriaRepository', Categor
 container.registerSingleton<IClienteRepository>('ClienteRepository', ClienteRepository)
 container.registerSingleton<IProdutoRepository>('ProdutoRepository', ProdutoRepository)
 container.registerSingleton<IPedidoRepository>('PedidoRepository', PedidoRepository)
+container.registerSingleton<IEnderecoRepository>('EnderecoRepository', EnderecoRepository)
 
 container.registerSingleton('ConversationStateService', ConversationStateService)
 container.registerSingleton('WhatsAppService', WhatsAppService)

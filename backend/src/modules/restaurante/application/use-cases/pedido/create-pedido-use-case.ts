@@ -4,6 +4,7 @@ import { IPedidoRepository } from "@modules/restaurante/domain/repositories/pedi
 import { ICreatePedidoDTO } from "../../dto/i-pedido-dto"
 import { IClienteRepository } from "@modules/restaurante/domain/repositories/cliente/i-cliente-repository"
 import { IProdutoRepository } from "@modules/restaurante/domain/repositories/produto/i-produto-repository"
+import { IEnderecoRepository } from "@modules/clientes/domain/repositories/endereco/i-endereco-repository"
 import { criarCobrancaPix } from "@services/mercado-pago.service"
 
 
@@ -15,7 +16,9 @@ class CreatePedidoUseCase {
     @inject('ClienteRepository')
     private clienteRepository: IClienteRepository,
     @inject('ProdutoRepository')
-    private produtoRepository: IProdutoRepository
+    private produtoRepository: IProdutoRepository,
+    @inject('EnderecoRepository')
+    private enderecoRepository: IEnderecoRepository
   ) {}
 
   async execute(data: ICreatePedidoDTO): Promise<HttpResponse> {
@@ -26,6 +29,20 @@ class CreatePedidoUseCase {
           nome: '',
           telefone: data.telefone!
         })
+      }
+
+      let enderecoId: string | undefined
+      if (data.endereco) {
+        const endereco = await this.enderecoRepository.create({
+          clienteId: cliente.id,
+          cep: data.endereco.cep,
+          rua: data.endereco.rua,
+          bairro: data.endereco.bairro,
+          cidade: data.endereco.cidade,
+          numero: data.endereco.numero,
+          complemento: data.endereco.complemento
+        })
+        enderecoId = endereco.id
       }
 
       const itensComPreco = await Promise.all(
@@ -46,6 +63,7 @@ class CreatePedidoUseCase {
 
       const pedido = await this.pedidoRepository.create({
         clienteId: cliente.id,
+        enderecoId,
         itens: itensComPreco,
         formaPagamento: data.formaPagamento,
         total,
