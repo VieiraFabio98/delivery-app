@@ -24,6 +24,38 @@ class PedidoRepository implements IPedidoRepository {
     }
   }
 
+  async get(id: string): Promise<IPedido | null> {
+    try {
+      return this.repository.findOne({ where: { id } })
+    } catch(error) {
+      throw error
+    }
+  }
+
+  async getByMpPaymentId(mpPaymentId: string): Promise<IPedido | null> {
+    try {
+      return this.repository.findOne({ where: { mpPaymentId } })
+    } catch(error) {
+      throw error
+    }
+  }
+
+  async update(id: string, data: Partial<IPedido>): Promise<IPedido> {
+    try {
+      await this.repository.update(id, data as any)
+
+      const updated = await this.repository.findOneBy({ id })
+
+      if (!updated) {
+        throw new Error('Pedido não encontrado após atualização')
+      }
+
+      return updated
+    } catch(error) {
+      throw error
+    }
+  }
+
 }
 
 export { PedidoRepository }

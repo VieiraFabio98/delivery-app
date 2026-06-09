@@ -1,5 +1,6 @@
 import { ConversationState } from '@modules/restaurante/infra/entities/ConversationState'
 import { ProdutoRepository } from '@modules/restaurante/infra/repositories/produto-repository'
+import { mercadoPagoWebhook } from '@modules/restaurante/infra/controllers/pedido-controller'
 import { ConversationStateService } from '@services/conversation-state.service'
 import { WhatsAppService } from '@services/whats-app.service'
 import { serverError } from '@shared/helpers'
@@ -7,6 +8,9 @@ import { FastifyInstance } from 'fastify'
 import { container } from 'tsyringe'
 
 export async function webhookRoutes(app: FastifyInstance) {
+  // Webhook do Mercado Pago (confirmação de pagamento)
+  app.post('/mercadopago', mercadoPagoWebhook)
+
   // Verificação do webhook pela Meta (GET)
   app.get('/whatsapp', async (request, reply) => {
     const { 'hub.mode': mode, 'hub.verify_token': token, 'hub.challenge': challenge } = request.query as Record<string, string>

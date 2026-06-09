@@ -45,3 +45,22 @@ export async function criarCobrancaPix({ pedidoId, total, telefone }: CriarPixPa
     qrCodeBase64: txData.qr_code_base64,
   }
 }
+
+interface PaymentInfo {
+  id: string
+  status: string
+  externalReference: string | null
+}
+
+export async function getPayment(paymentId: string): Promise<PaymentInfo> {
+  const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN! })
+  const payment = new Payment(client)
+
+  const resultado = await payment.get({ id: paymentId })
+
+  return {
+    id: String(resultado.id),
+    status: resultado.status ?? 'unknown',
+    externalReference: resultado.external_reference ?? null,
+  }
+}
