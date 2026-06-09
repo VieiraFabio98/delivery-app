@@ -80,12 +80,12 @@ export default function CartShopDialog({ open, onClose, itens, total, phone, onP
     }
   }
 
-  async function buscarCep(cep: string) {
-    const limpo = cep.replace(/\D/g, "")
-    if (limpo.length !== 8) return
+  async function searchCep(cep: string) {
+    const cleanCep = cep.replace(/\D/g, "")
+    if (cleanCep.length !== 8) return
     setCepLoading(true)
     try {
-      const res = await fetch(`https://viacep.com.br/ws/${limpo}/json/`)
+      const res = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`)
       const data = await res.json()
       if (data.erro) {
         toast.error("CEP não encontrado")
@@ -104,7 +104,7 @@ export default function CartShopDialog({ open, onClose, itens, total, phone, onP
     }
   }
 
-  function handleConfirmarCarrinho() {
+  function handleConfirmCart() {
     if (!phone) {
       setStep("telefone")
     } else {
@@ -112,7 +112,7 @@ export default function CartShopDialog({ open, onClose, itens, total, phone, onP
     }
   }
 
-  function handleConfirmarTelefone() {
+  function handleConfirmPhone() {
     if (!phone.trim()) {
       toast.error("Informe seu número de WhatsApp")
       return
@@ -120,7 +120,7 @@ export default function CartShopDialog({ open, onClose, itens, total, phone, onP
     goToAddress(phone.trim())
   }
 
-  function handleConfirmarEndereco() {
+  function handleConfirmAddress() {
     if (!endereco.rua.trim() || !endereco.numero.trim() || !endereco.cep.trim()) {
       toast.error("Preencha rua, número e CEP")
       return
@@ -151,7 +151,7 @@ export default function CartShopDialog({ open, onClose, itens, total, phone, onP
             onFormaPagamentoChange={setFormaPagamento}
             loading={loading}
             onClose={handleClose}
-            onConfirm={handleConfirmarCarrinho}
+            onConfirm={handleConfirmCart}
           />
         )}
 
@@ -161,7 +161,7 @@ export default function CartShopDialog({ open, onClose, itens, total, phone, onP
             onPhoneChange={onPhoneChange}
             loading={loading}
             onBack={() => setStep("carrinho")}
-            onConfirm={handleConfirmarTelefone}
+            onConfirm={handleConfirmPhone}
           />
         )}
 
@@ -169,11 +169,11 @@ export default function CartShopDialog({ open, onClose, itens, total, phone, onP
           <AddressStep
             endereco={endereco}
             onEnderecoChange={setEndereco}
-            onCepBlur={buscarCep}
+            onCepBlur={searchCep}
             cepLoading={cepLoading}
             loading={loading}
             onBack={() => setStep("telefone")}
-            onConfirm={handleConfirmarEndereco}
+            onConfirm={handleConfirmAddress}
           />
         )}
 

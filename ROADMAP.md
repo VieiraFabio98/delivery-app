@@ -1,4 +1,4 @@
-# Roadmap Técnico — Tozetto
+# Roadmap Técnico — deliveryhub
 
 Detalhamento das etapas de implementação.
 
@@ -17,9 +17,11 @@ Detalhamento das etapas de implementação.
 | `Cliente` | id, phone (único), nome, createdAt |
 | `Categoria` | id, nome, ordem |
 | `Produto` | id, nome, descricao, preco, ativo, categoria |
-| `Pedido` | id, cliente, status, total, createdAt |
+| `Pedido` | id, clienteId, enderecoId, status, formaPagamento, total, mpPaymentId, mpEventId, itens, createdAt |
 | `ItemPedido` | id, pedido, produto, quantidade, precoUnitario |
 | `ConversationState` | id, phone (único), etapa, carrinho (JSON), updatedAt |
+| `Endereco` (mód. `clientes`) | id, clienteId, cep, rua, bairro, cidade, numero, complemento |
+| `User` (mód. `auth`) | id, name, email (único), password (bcrypt), createdAt |
 
 **Status do pedido:** `aguardando_pagamento` → `pago` → `em_preparo` → `pronto` → `entregue` → `cancelado`
 
@@ -82,9 +84,12 @@ Função auxiliar a criar: `sendWhatsAppMessage(to: string, body: object)` que c
 - [?] Registrar plugin TypeORM no Fastify
 - [X] Criar serviço `WhatsAppService` com métodos `sendText()`, `sendButtons()`, `sendList()`
 - [X] Criar serviço `ConversationStateService` com `getState()` e `setStep()`
-- [ ] Implementar handler de mensagens no webhook POST (fluxo completo: categorias → produtos → carrinho → confirmar)
+- [X] Entidade `Endereco` (módulo `clientes`) + CRUD completo + `GET /enderecos/telefone/:telefone`
+- [X] Fluxo de pedido via **web** (página `/menu` + checkout `CartShop`): carrinho → telefone → endereço → Pix
+- [X] `CreatePedidoUseCase`: cliente por telefone, preços no servidor, endereço vinculado, cobrança Pix
+- [ ] Implementar handler de mensagens no webhook **WhatsApp** POST (fluxo completo: categorias → produtos → carrinho → confirmar) — esboçado, incompleto
 - [ ] Seed inicial de categorias e produtos para teste
-- [ ] Testar fluxo completo: oi → cardápio → produto → carrinho → confirmar
+- [ ] Testar fluxo completo via WhatsApp: oi → cardápio → produto → carrinho → confirmar
 
 ---
 
@@ -111,11 +116,13 @@ POST /webhook/mercadopago
 
 ### Tarefas técnicas
 
-- [ ] Instalar SDK do Mercado Pago (`mercadopago`)
-- [ ] Criar serviço `PagamentoService` com método `criarPixCobranca(pedido)`
-- [ ] Salvar `mp_payment_id` e `mp_event_id` no pedido
+- [X] Instalar SDK do Mercado Pago (`mercadopago`)
+- [X] Criar serviço de pagamento (`mercado-pago.service.ts`) com `criarCobrancaPix(pedido)` (Payment API + idempotency key)
+- [X] Salvar `mpPaymentId` no pedido (coluna `mpEventId` reservada pra idempotência do webhook)
+- [X] Exibir QR Code + copia-e-cola no checkout web (`PixStep`)
 - [ ] Implementar `POST /webhook/mercadopago` com verificação de assinatura
-- [ ] Ao confirmar pagamento: atualizar status + enviar msg WhatsApp
+- [ ] Ao confirmar pagamento: atualizar status (`pago`) + enviar msg WhatsApp
+- [ ] ⚠️ Trocar `MP_ACCESS_TOKEN` de produção (`APP_USR-`) pelo de teste (`TEST-`) antes de testar
 - [ ] Testar com sandbox do MP (cartões e Pix fake disponíveis)
 
 ---
@@ -198,16 +205,17 @@ DELETE /admin/categorias/:id
 - [X] CRUD completo de produtos com upload de imagem para S3 (`POST /produtos/image/:id`)
 - [X] CRUD completo de categorias
 - [X] Entidade `Produto` com campo `isActive` (coluna `is_active`)
-- [ ] Criar entidade `Usuario` (admin) e seed com usuário inicial
-- [ ] Implementar `POST /admin/login` com JWT
+- [X] Criar entidade `User` (módulo `auth`) com senha hasheada (bcrypt) + `CreateUserUseCase`/get/delete
+- [X] Criar página pública de cardápio + pedido (`/menu`) — cardápio, carrinho e checkout Pix
+- [ ] Seed com usuário admin inicial
+- [ ] Implementar `POST /admin/login` com JWT (entidade existe, falta login/sign)
 - [ ] Middleware de verificação JWT nas rotas admin do Fastify
-- [ ] Lógica de autenticação na página `/login` do frontend (form existe, falta chamada à API)
+- [ ] Lógica de autenticação na página `/login` do frontend (form existe, hoje só navega pra `/`)
 - [ ] Proteger rotas admin no React Router (redirect para `/login` se sem token)
 - [ ] Implementar `GET /admin/pedidos`, `GET /admin/pedidos/:id`, `PATCH /admin/pedidos/:id/status`
-- [ ] Criar página `/pedidos` com listagem e filtro por status
+- [ ] Criar página `/pedidos` com listagem e filtro por status (hoje stub)
 - [ ] Criar página `/pedidos/:id` com detalhe e atualização de status
-- [ ] Implementar `GET /cardapio` (público) retornando categorias + produtos ativos
-- [ ] Criar página pública `/cardapio` acessível sem login
+- [ ] Páginas `/clientes` e `/conversas` (hoje stubs)
 - [ ] Adicionar envio do link do cardápio no handler do WhatsApp
 - [ ] Deploy: Vercel para frontend, Railway/Render para backend
 
@@ -221,12 +229,12 @@ PORT=3000
 NODE_ENV=development
 
 # Banco
-DATABASE_URL=postgresql://tozetto_user:123456@localhost:5432/tozetto_db
+DATABASE_URL=postgresql://deliveryhub_user:123456@localhost:5432/deliveryhub_db
 
 # WhatsApp
 WHATSAPP_ACCESS_TOKEN=
 WHATSAPP_PHONE_NUMBER_ID=
-WEBHOOK_VERIFY_TOKEN=tozetto_webhook_secret
+WEBHOOK_VERIFY_TOKEN=deliveryhub_webhook_secret
 
 # Mercado Pago
 MP_ACCESS_TOKEN=

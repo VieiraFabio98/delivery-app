@@ -15,6 +15,11 @@ interface AddressStepProps {
   onConfirm: () => void
 }
 
+function formatCep(cep: string) {
+  const d = cep.replace(/\D/g, "").slice(0, 8)
+  return d.length > 5 ? `${d.slice(0, 5)}-${d.slice(5)}` : d
+}
+
 export default function AddressStep({ endereco, onEnderecoChange, onCepBlur, cepLoading, loading, onBack, onConfirm }: AddressStepProps) {
   function CepSpinner() {
     return <Loader2 className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
@@ -26,7 +31,7 @@ export default function AddressStep({ endereco, onEnderecoChange, onCepBlur, cep
         <div className="flex gap-2">
           <div className="flex flex-col gap-1.5 flex-1">
             <Label htmlFor="cep">CEP</Label>
-            <Input id="cep" placeholder="00000-000" value={endereco.cep} onChange={e => onEnderecoChange(p => ({ ...p, cep: e.target.value.replace(/\D/g, "") }))} onBlur={e => onCepBlur(e.target.value)} maxLength={8} />
+            <Input id="cep" placeholder="00000-000" value={formatCep(endereco.cep)} onChange={e => onEnderecoChange(p => ({ ...p, cep: e.target.value.replace(/\D/g, "").slice(0, 8) }))} onBlur={() => onCepBlur(endereco.cep)} maxLength={9} />
           </div>
           <div className="flex flex-col gap-1.5 w-24">
             <Label htmlFor="numero">Número</Label>

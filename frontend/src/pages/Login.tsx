@@ -19,7 +19,7 @@ export default function Login() {
       {/* lado esquerdo — 60% preto */}
       <div className="hidden lg:flex lg:w-3/5 bg-black items-center justify-center">
         <div className="text-center space-y-3">
-          <h1 className="text-4xl font-bold text-white">Tozetto Delivery</h1>
+          <h1 className="text-4xl font-bold text-white">deliveryHub</h1>
           <p className="text-zinc-400 text-lg">Gestão de pedidos via Web/WhatsApp</p>
         </div>
       </div>

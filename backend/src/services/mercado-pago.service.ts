@@ -24,7 +24,7 @@ export async function criarCobrancaPix({ pedidoId, total, telefone }: CriarPixPa
       description: `Pedido ${pedidoId}`,
       payment_method_id: 'pix',
       payer: {
-        email: `${telefone}@tozetto.com`,
+        email: `${telefone}@deliveryhub.com`,
       },
       external_reference: pedidoId,
     },

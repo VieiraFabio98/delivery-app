@@ -59,7 +59,7 @@ async function handleMessage(message: any, telefone: string, conversationsStateS
     
     switch(state?.etapa) {
       case 'inicio':
-        await whatsAppService.sendText(telefone, 'Olá! Bem-vindo ao Tozetto 🍔')
+        await whatsAppService.sendText(telefone, 'Olá! Bem-vindo ao deliveryhub 🍔')
         await whatsAppService.sendButtons(telefone, 'O que deseja fazer?', [
           { id: 'ver_cardapio', title: 'Ver cardápio' },
           { id: 'meus_pedidos', title: 'Meus pedidos' },
@@ -81,7 +81,7 @@ async function handleMessage(message: any, telefone: string, conversationsStateS
     switch(messageId) {
       case 'ver_cardapio':
         
-        await whatsAppService.sendText(telefone, 'Aqui está o nosso cardápio: https://tozetto.com.br/cardapio')
+        await whatsAppService.sendText(telefone, 'Aqui está o nosso cardápio: https://deliveryhub.com.br/cardapio')
         break
       case 'meus_pedidos':
         await whatsAppService.sendText(telefone, 'Você ainda não fez nenhum pedido.')

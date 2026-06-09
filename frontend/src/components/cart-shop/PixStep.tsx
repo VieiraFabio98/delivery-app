@@ -11,7 +11,7 @@ interface PixStepProps {
 }
 
 export default function PixStep({ pix, onClose }: PixStepProps) {
-  function copiar() {
+  function copy() {
     if (navigator.clipboard) {
       navigator.clipboard.writeText(pix.qrCode).then(() => toast.success("Código copiado!"))
     } else {
@@ -37,7 +37,7 @@ export default function PixStep({ pix, onClose }: PixStepProps) {
           <Label>Pix copia e cola</Label>
           <div className="flex gap-2 mt-1">
             <Input readOnly value={pix.qrCode} className="text-xs" />
-            <Button variant="outline" onClick={copiar}>Copiar</Button>
+            <Button variant="outline" onClick={copy}>Copiar</Button>
           </div>
         </div>
         <p className="text-sm text-muted-foreground text-center">Após o pagamento você receberá a confirmação pelo WhatsApp.</p>
