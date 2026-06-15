@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
   Dialog,
   DialogContent,
@@ -14,6 +14,7 @@ import CartStep from "./CartStep"
 import PhoneStep from "./PhoneStep"
 import AddressStep from "./AddressStep"
 import PixStep from "./PixStep"
+import CheckoutStep from "./Checkout"
 
 interface CartShopProps {
   open: boolean
@@ -25,16 +26,30 @@ interface CartShopProps {
 }
 
 export default function CartShopDialog({ open, onClose, itens, total, phone, onPhoneChange }: CartShopProps) {
-  const [step, setStep] = useState<Step>("carrinho")
+  const STORAGE_KEY = "cartShopState"
+  const persisted = (() => {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "{}") } catch { return {} }
+  })()
+
+  const [step, setStep] = useState<Step>(persisted.step ?? "carrinho")
   const [loading, setLoading] = useState(false)
-  const [pix, setPix] = useState<PixData | null>(null)
-  const [formaPagamento, setFormaPagamento] = useState<"pix" | "cartao">("pix")
-  const [endereco, setEndereco] = useState<Endereco>({ rua: "", bairro: "", cidade: "", numero: "", complemento: "", cep: "" })
+  const [pix, setPix] = useState<PixData | null>(persisted.pix ?? null)
+  const [formaPagamento, setFormaPagamento] = useState<"pix" | "cartao">(persisted.formaPagamento ?? "pix")
+  const [endereco, setEndereco] = useState<Endereco>(persisted.endereco ?? { rua: "", bairro: "", cidade: "", numero: "", complemento: "", cep: "" })
   const [cepLoading, setCepLoading] = useState(false)
 
-  function handleClose() {
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ step, pix, formaPagamento, endereco }))
+  }, [step, pix, formaPagamento, endereco])
+
+  function resetState() {
     setStep("carrinho")
     setPix(null)
+    setEndereco({ rua: "", bairro: "", cidade: "", numero: "", complemento: "", cep: "" })
+    localStorage.removeItem(STORAGE_KEY)
+  }
+
+  function handleClose() {
     onClose()
   }
 
@@ -125,6 +140,10 @@ export default function CartShopDialog({ open, onClose, itens, total, phone, onP
       toast.error("Preencha rua, número e CEP")
       return
     }
+    setStep("checkout")
+  }
+
+  function handleConfirmCheckout() {
     createOrder(phone.trim())
   }
 
@@ -133,6 +152,7 @@ export default function CartShopDialog({ open, onClose, itens, total, phone, onP
     telefone: "Seu WhatsApp",
     endereco: "Endereço de entrega",
     pix: "Pague com Pix",
+    checkout: "Confirme seu pedido",
   }
 
   return (
@@ -177,8 +197,21 @@ export default function CartShopDialog({ open, onClose, itens, total, phone, onP
           />
         )}
 
+        {step === "checkout" && (
+          <CheckoutStep
+            endereco={endereco}
+            itens={itens}
+            total={total}
+            phone={phone}
+            formaPagamento={formaPagamento}
+            loading={loading}
+            onBack={() => setStep("endereco")}
+            onConfirm={handleConfirmCheckout}
+          />
+        )}
+
         {step === "pix" && pix && (
-          <PixStep pix={pix} onClose={handleClose} />
+          <PixStep pix={pix} onClose={() => { resetState(); onClose() }} />
         )}
       </DialogContent>
     </Dialog>

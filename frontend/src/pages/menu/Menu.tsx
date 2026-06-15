@@ -9,6 +9,7 @@ import { Minus, Plus, ShoppingCart } from "lucide-react"
 import { toast } from "sonner"
 import * as React from "react"
 import CartShopDialog from "@/components/cart-shop/CartShop"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 
 interface CartItem {
   produto: Produto
@@ -23,6 +24,7 @@ export default function Menu() {
   const [direcao, setDirecao] = useState(1)
 
   const [cartShopOpen, setCartShopOpen] = React.useState(false)
+  const [produtoDetalhe, setProdutoDetalhe] = useState<Produto | null>(null)
   const [phone, setphone] = useState(() => {
     const params = new URLSearchParams(window.location.search)
     return params.get("phone") ?? ""
@@ -110,7 +112,7 @@ export default function Menu() {
               {produtosByCategoria(cat.id).map((produto: any) => {
                 const qty = cart[produto.id]?.quantidade ?? 0
                 return (
-                  <div key={produto.id} className="flex gap-3 items-center rounded-xl border p-3">
+                  <div key={produto.id} onClick={() => setProdutoDetalhe(produto)} className="flex gap-3 items-center rounded-xl border p-3 cursor-pointer hover:bg-accent/50 transition-colors">
                     {produto.imageUrl && (
                       <img
                         src={produto.imageUrl}
@@ -121,11 +123,11 @@ export default function Menu() {
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-sm sm:text-base leading-tight">{produto.nome}</p>
                       {produto.descricao && (
-                        <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">{produto.descricao}</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">{produto.descricao.length > 20 ? `${produto.descricao.slice(0, 20)}...` : produto.descricao}</p>
                       )}
                       <p className="mt-1 text-sm font-semibold">R$ {Number(produto.preco).toFixed(2)}</p>
                     </div>
-                    <div className="flex items-center gap-1.5 shrink-0">
+                    <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
                       {qty > 0 && (
                         <>
                           <Button size="icon" variant="outline" className="h-8 w-8" onClick={() => decrementar(produto)}>
@@ -156,6 +158,32 @@ export default function Menu() {
           </Button>
         </div>
       </div>
+      <Dialog open={!!produtoDetalhe} onOpenChange={(o) => !o && setProdutoDetalhe(null)}>
+        <DialogContent>
+          {produtoDetalhe && (
+            <>
+              <DialogHeader>
+                <DialogTitle>{produtoDetalhe.nome}</DialogTitle>
+                {produtoDetalhe.descricao && (
+                  <DialogDescription>{produtoDetalhe.descricao}</DialogDescription>
+                )}
+              </DialogHeader>
+              {produtoDetalhe.imageUrl && (
+                <img
+                  src={produtoDetalhe.imageUrl}
+                  alt={produtoDetalhe.nome}
+                  className="w-full h-48 rounded-lg object-cover"
+                />
+              )}
+              <p className="text-lg font-semibold">R$ {Number(produtoDetalhe.preco).toFixed(2)}</p>
+              <Button onClick={() => { incrementar(produtoDetalhe); setProdutoDetalhe(null) }}>
+                Adicionar ao carrinho
+              </Button>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
       <CartShopDialog
         open={cartShopOpen}
         onClose={() => setCartShopOpen(false)}

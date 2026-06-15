@@ -5,7 +5,7 @@ export interface CartItem {
   quantidade: number
 }
 
-export type Step = "carrinho" | "telefone" | "endereco" | "pix"
+export type Step = "carrinho" | "telefone" | "endereco" | "checkout" | "pix"
 
 export interface Endereco {
   rua: string

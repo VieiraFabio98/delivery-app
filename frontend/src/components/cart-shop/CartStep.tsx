@@ -49,7 +49,7 @@ export default function CartStep({ itens, total, formaPagamento, onFormaPagament
       </div>
       <DialogFooter>
         <Button variant="outline" onClick={onClose}>Continuar comprando</Button>
-        <Button onClick={onConfirm} disabled={loading}>Confirmar pedido</Button>
+        <Button onClick={onConfirm} disabled={loading}>Avançar</Button>
       </DialogFooter>
     </>
   )

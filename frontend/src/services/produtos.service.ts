@@ -9,6 +9,7 @@ export interface Produto {
   nome: string
   descricao: string
   preco: number
+  imageUrl?: string
 }
 
 export const produtoservice = {
